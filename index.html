@@ -734,14 +734,59 @@
   }
   computePrice();
 
-  // Add to cart (stub)
-  document.getElementById('addBtn').addEventListener('click', ()=>{
+  // ===== Shopify checkout wiring =====
+  // Race Shim sells through Factory Kahne's existing Shopify store. This hands the shopper
+  // straight into Shopify's own hosted checkout with the picked spec attached. It uses a plain
+  // cart form — NO API keys, and NOTHING here can read, change, or reach the store's admin or
+  // its other products. Fill in two things and checkout goes live:
+  //   1. SHOP_DOMAIN   — the store's *.myshopify.com address
+  //   2. SHIM_VARIANTS — the numeric variant ID of each product: "Valve Shim" ($1.50) + "Bleed Shim" ($3.75)
+  //                      (open the product in the admin; the variant ID is the long number at the end of the URL)
+  const SHOP_DOMAIN   = 'raceshim.myshopify.com';
+  const SHIM_VARIANTS = { valve: '47075054911644', bleed: '47075056222364' };
+  const checkoutConfigured = ()=>
+       !SHOP_DOMAIN.startsWith('YOUR-')
+    && /^\d+$/.test(SHIM_VARIANTS.valve)
+    && /^\d+$/.test(SHIM_VARIANTS.bleed);
+
+  const addBtn  = document.getElementById('addBtn');
+  const selText = (id)=>{ const s = document.getElementById(id); return s && s.value ? s.options[s.selectedIndex].text : ''; };
+
+  addBtn.addEventListener('click', ()=>{
     const perShim = unitPrice();
     if(!perShim){ alert('Pick an inner diameter, outer diameter, and thickness first.'); return; }
     if(shape === 'bleed' && !document.getElementById('notchSel').value){
       alert('Pick a notch count for the bleed shim.'); return;
     }
-    alert('Preview build — cart/checkout not wired yet. Shopify integration lands once the real catalog drops.');
+    if(!checkoutConfigured()){
+      alert("Checkout isn't connected yet — the Shopify store details still need to be filled in.");
+      return;
+    }
+
+    const qty = Math.max(1, parseInt(qtyInput.value, 10) || 1);
+    // The picked spec rides along as line-item properties so the order shows exactly what to pull.
+    const props = {
+      'Shape':          shape === 'bleed' ? 'Bleed shim' : 'Valve shim',
+      'Inner diameter': selText('idSel'),
+      'Outer diameter': selText('odSel'),
+      'Thickness':      selText('thSel'),
+      'Source':         'Race Shim',   // marks this as a Race Shim order inside the shared store
+    };
+    if(shape === 'bleed') props['Notch count'] = selText('notchSel');
+
+    // Hand off to Shopify's hosted checkout via a normal cart form (no API keys, nothing touches the admin).
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `https://${SHOP_DOMAIN}/cart/add`;
+    form.acceptCharset = 'UTF-8';
+    form.style.display = 'none';
+    const hidden = (name, value)=>{ const i = document.createElement('input'); i.type = 'hidden'; i.name = name; i.value = value; form.appendChild(i); };
+    hidden('id', SHIM_VARIANTS[shape]);
+    hidden('quantity', qty);
+    hidden('return_to', '/checkout');                 // skip the cart page, go straight to checkout
+    Object.keys(props).forEach(k=> hidden(`properties[${k}]`, props[k]));
+    document.body.appendChild(form);
+    form.submit();
   });
 </script>
 
