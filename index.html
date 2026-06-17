@@ -83,12 +83,13 @@
   @media (max-width:760px){ .nav-links{display:none} }
 
   /* HERO */
-  .hero{padding:72px 0 48px;border-bottom:1px solid var(--line)}
-  .hero h1{font-size:clamp(56px,12vw,148px)}
+  .hero{padding:24px 0 20px;border-bottom:1px solid var(--line)}
+  .hero h1{font-size:clamp(32px,6vw,58px)}
   .hero .sub{
-    margin-top:18px;max-width:620px;font-size:18px;color:#3a3a3a;
+    margin-top:9px;max-width:660px;font-size:16px;color:#3a3a3a;
   }
-  .hero .cta-row{margin-top:28px;display:flex;flex-wrap:wrap;gap:12px}
+  .hero .sub a{border-bottom:1.5px solid var(--ink);font-weight:600;white-space:nowrap}
+  .hero .cta-row{margin-top:14px;display:flex;flex-wrap:wrap;gap:12px}
   .btn-primary{
     background:var(--ink);color:var(--paper);border:0;
     padding:16px 24px;border-radius:999px;font-weight:600;font-size:16px;
@@ -110,6 +111,9 @@
   .sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:40px;flex-wrap:wrap}
   .sec-head h2{font-size:clamp(40px,6vw,72px)}
   .kicker{font-size:12px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--steel)}
+  /* configurator sits right under the compact hero so it's visible on load */
+  #shop{padding-top:26px}
+  #shop .sec-head{margin-bottom:22px}
 
   /* CONFIGURATOR */
   .config{
@@ -285,29 +289,14 @@
 <section id="top" class="hero">
   <div class="container">
     <div class="kicker reveal">High performance shock valving shims for racers</div>
-    <h1 class="reveal" style="margin-top:14px">Spec your shim.<br/>Ship today.</h1>
-    <p class="sub reveal">Pick your inner diameter, outer diameter, thickness and shape. We pull it from our shop and get it shipped the same day. In-house stock.</p>
-    <div class="cta-row reveal">
-      <button class="btn-primary" onclick="document.getElementById('shop').scrollIntoView({behavior:'smooth'})">
-        Build your shim
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-      </button>
-      <a class="btn-ghost" href="#faq">New to shim stacks?</a>
-    </div>
+    <h1 class="reveal" style="margin-top:8px">Spec your shim. Ship today.</h1>
+    <p class="sub reveal">Pick inner diameter, outer diameter, thickness and shape — one price, one button, shipped the same day. <a href="#faq">New to shim stacks?</a></p>
   </div>
 </section>
 
 <section id="shop" class="sec">
   <div class="container">
-    <div class="sec-head reveal">
-      <div>
-        <div class="kicker">Shim configurator</div>
-        <h2 style="margin-top:10px">Build it.</h2>
-      </div>
-      <p style="max-width:420px;color:#333;margin:0">Four choices, one price, one button. Takes under a minute on a phone.</p>
-    </div>
-
-    <div class="config reveal">
+    <div class="config">
       <div class="config-left">
         <div class="shim-viewer" id="shimViewer" aria-label="3D preview of your shim">
           <div class="viewer-loading" id="viewerLoading">Loading preview…</div>
