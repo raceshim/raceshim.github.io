@@ -5,3 +5,9 @@ Thumbs.db
 # build artifacts (not for the live site)
 make_product_images.py
 shopify-product-images/
+
+# logo experiment artifacts
+logo-outline.png
+logo-square.png
+logo-preview-on-white.png
+_logo_small.png
