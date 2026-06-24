@@ -295,15 +295,16 @@
   .cart-page-grid{display:grid;grid-template-columns:1fr 360px;gap:48px;align-items:start}
   @media(max-width:860px){ .cart-page-grid{grid-template-columns:1fr;gap:28px} }
   .cart-empty{text-align:center;color:var(--steel);padding:64px 20px;font-size:16px;line-height:1.7}
-  .cart-line{display:grid;grid-template-columns:1fr auto auto;gap:28px;align-items:start;padding:26px 0;border-bottom:1px solid var(--line)}
+  .cart-line{display:grid;grid-template-columns:minmax(0,1fr) 200px 100px;gap:28px;align-items:start;padding:26px 0;border-bottom:1px solid var(--line)}
   .cart-line:first-child{padding-top:4px}
   .cl-name{font-weight:700;font-size:18px;margin-bottom:10px;text-transform:capitalize}
   .cl-props{font-size:14px;color:var(--steel);line-height:1.85}
-  .cl-mid{display:flex;align-items:center;gap:16px;padding-top:2px}
-  .cl-qty{display:flex;align-items:stretch;border:1.5px solid var(--line);border-radius:10px;overflow:hidden}
-  .cl-qty button{background:var(--paper);border:0;width:40px;font-size:18px;font-weight:700;cursor:pointer}
+  .cl-mid{display:flex;align-items:center;gap:22px;padding-top:2px}
+  .cl-qty{display:flex;align-items:stretch;border:1.5px solid var(--line);border-radius:10px;overflow:hidden;flex:0 0 auto}
+  .cl-qty button{background:var(--paper);border:0;width:40px;font-size:18px;font-weight:700;cursor:pointer;flex:0 0 auto}
   .cl-qty button:hover{background:var(--fog)}
-  .cl-qty input{border:0;border-left:1.5px solid var(--line);border-right:1.5px solid var(--line);width:54px;
+  /* higher specificity than the global input[type=number]; fixed width fits 3 digits so the trash never shifts */
+  .cart-line .cl-qty input{border:0;border-left:1.5px solid var(--line);border-right:1.5px solid var(--line);width:64px;min-width:64px;
     text-align:center;font-size:15px;font-weight:600;padding:10px 4px}
   .cl-qty input:focus{outline:0}
   .cl-remove{background:transparent;border:0;color:var(--steel);cursor:pointer;padding:8px;display:inline-flex;border-radius:8px}
@@ -468,18 +469,6 @@
 
 <section id="shop" class="sec">
   <div class="container">
-    <div class="part-search">
-      <label for="partSearch">Search by part number, size, or type</label>
-      <div class="ps-row">
-        <div class="ps-input-wrap">
-          <input id="partSearch" type="text" placeholder="Try “1.350”, “bleed”, “IBC”, or 003-SHM-1210" autocomplete="off"
-                 role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="partResults" />
-          <div id="partResults" class="ps-results" role="listbox" aria-label="Matching parts"></div>
-        </div>
-        <button type="button" id="partSearchBtn">Search</button>
-      </div>
-      <div id="partSearchMsg" class="ps-msg"></div>
-    </div>
     <div class="config">
       <div class="config-left">
         <div class="shim-viewer" id="shimViewer" aria-label="3D preview of your shim">
@@ -704,7 +693,7 @@
       <h4>Shop</h4>
       <ul>
         <li><a href="#shop">Configurator</a></li>
-        <li><a href="#faq">Shim guide</a></li>
+        <li><a href="#catalog">Catalog</a></li>
       </ul>
     </div>
     <div>
