@@ -1847,39 +1847,19 @@
     "thk_disp": ".008\""
   },
   {
-    "part": "003-SHM-CM10",
-    "name": "CMR 10 Shim",
-    "price": 1.5,
-    "qoh": 33,
-    "desc": "CMR 10 Shim",
-    "category": "specialty",
-    "family": "CMR"
-  },
-  {
-    "part": "003-SHM-CM15",
-    "name": "CMR 15 Shim",
-    "price": 1.5,
-    "qoh": 23,
-    "desc": "CMR 15 Shim",
-    "category": "specialty",
-    "family": "CMR"
-  },
-  {
-    "part": "003-SHM-CM20",
-    "name": "CMR 20 Shim",
-    "price": 1.5,
-    "qoh": 13,
-    "desc": "CMR 20 Shim",
-    "category": "specialty",
-    "family": "CMR"
-  },
-  {
     "part": "003-SHM-DAS1",
     "name": "DAS Shim",
     "price": 1.5,
     "qoh": 50,
-    "desc": "DAS Shim",
+    "desc": "DAS Shim - .246 x .150 x .010",
     "category": "specialty",
+    "shape": "valve",
+    "id": 0.15,
+    "od": 0.246,
+    "thk": 0.01,
+    "id_disp": ".150\"",
+    "od_disp": ".246\"",
+    "thk_disp": ".010\"",
     "family": "Other specialty"
   },
   {
