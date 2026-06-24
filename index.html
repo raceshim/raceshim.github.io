@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Race Shim — Spec your shim. Ship today.</title>
-<meta name="description" content="Shock valving shims for racers. Pick your inner diameter, outer diameter, thickness and shape — we ship it. Valve and bleed shims, in stock." />
+<meta name="description" content="Shock valving shims for racers. Pick your inner diameter, outer diameter, thickness, and shape — we ship it. Valve and bleed shims, in stock." />
 <meta name="theme-color" content="#000000" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,7 +31,7 @@
     --focus:#000000;
   }
   *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
+  html{scroll-behavior:smooth;scroll-padding-top:144px}
   body{
     margin:0;
     font-family:'Inter',system-ui,-apple-system,sans-serif;
@@ -80,7 +80,26 @@
     transition:transform .15s, background .15s;
   }
   .nav-cta:hover{transform:translateY(-1px)}
-  @media (max-width:760px){ .nav-links{display:none} }
+  .nav-toggle{display:none;background:transparent;border:0;cursor:pointer;color:var(--ink);padding:8px;margin-left:4px}
+  @media (max-width:760px){
+    html{scroll-padding-top:84px}
+    .nav-inner{height:72px}
+    .brand img{height:56px}
+    .nav-toggle{display:inline-flex;align-items:center}
+    .nav-links{
+      position:absolute;top:72px;left:0;right:0;
+      flex-direction:column;gap:0;
+      background:var(--paper);border-bottom:1px solid var(--line);
+      padding:4px 24px 14px;
+      box-shadow:0 18px 40px rgba(0,0,0,.10);
+      transform:translateY(-10px);opacity:0;visibility:hidden;
+      transition:opacity .2s, transform .2s;
+    }
+    .nav-links.open{transform:none;opacity:1;visibility:visible}
+    .nav-links a{padding:15px 2px;border-bottom:1px solid var(--line);font-size:17px;opacity:1}
+    .nav-links a:last-child{border-bottom:0}
+    .nav-cta{padding:9px 14px;font-size:13px}
+  }
 
   /* HERO */
   .hero{padding:24px 0 20px;border-bottom:1px solid var(--line)}
@@ -250,6 +269,122 @@
   .reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease, transform .6s ease}
   .reveal.in{opacity:1;transform:none}
 
+  /* CART */
+  .nav-actions{display:flex;align-items:center}
+  .cart-btn{position:relative;background:transparent;border:1.5px solid var(--ink);color:var(--ink);
+    width:46px;height:46px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;
+    cursor:pointer;margin-left:14px;transition:background .15s,color .15s}
+  .cart-btn:hover{background:var(--ink);color:var(--paper)}
+  .cart-count{position:absolute;top:-6px;right:-6px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;
+    background:var(--ink);color:var(--paper);font-size:11px;font-weight:700;align-items:center;justify-content:center;
+    border:2px solid var(--paper);display:none}
+  .cart-count.show{display:inline-flex}
+  .cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);opacity:0;visibility:hidden;transition:opacity .25s;z-index:100}
+  .cart-overlay.open{opacity:1;visibility:visible}
+  .cart-drawer{position:fixed;top:0;right:0;height:100%;width:min(440px,100%);background:var(--paper);z-index:101;
+    transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;
+    box-shadow:-20px 0 60px rgba(0,0,0,.2)}
+  .cart-drawer.open{transform:none}
+  .cart-head{display:flex;align-items:center;justify-content:space-between;padding:24px;border-bottom:1px solid var(--line)}
+  .cart-head h3{font-size:28px}
+  .cart-close{background:transparent;border:0;font-size:30px;line-height:1;cursor:pointer;color:var(--ink);padding:2px 8px}
+  .cart-items{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:4px 24px;overscroll-behavior:contain}
+  html.cart-open,body.cart-open{overflow:hidden}
+  .cart-empty{text-align:center;color:var(--steel);padding:64px 20px;font-size:15px;line-height:1.7}
+  .cart-line{padding:18px 0;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+  .cl-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+  .cl-name{font-weight:700;font-size:15px}
+  .cl-spec{font-size:12.5px;color:var(--steel);margin-top:3px;line-height:1.5}
+  .cl-price{font-weight:700;font-size:15px;white-space:nowrap}
+  .cl-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .cl-qty{display:flex;align-items:stretch;border:1.5px solid var(--line);border-radius:10px;overflow:hidden}
+  .cl-qty button{background:var(--paper);border:0;width:38px;font-size:18px;font-weight:700;cursor:pointer}
+  .cl-qty button:hover{background:var(--fog)}
+  .cl-qty input{border:0;border-left:1.5px solid var(--line);border-right:1.5px solid var(--line);width:58px;
+    text-align:center;font-size:15px;font-weight:600;padding:10px 4px}
+  .cl-qty input:focus{outline:0}
+  .cl-remove{background:transparent;border:0;color:var(--steel);font-size:13px;cursor:pointer;
+    text-decoration:underline;text-underline-offset:2px}
+  .cl-remove:hover{color:var(--ink)}
+  .cart-foot{border-top:1px solid var(--line);padding:24px;display:flex;flex-direction:column;gap:14px;flex-shrink:0}
+  .cart-ship{font-size:13px;color:var(--steel)}
+  .cart-ship .bar{height:6px;border-radius:999px;background:var(--fog);overflow:hidden;margin-top:8px}
+  .cart-ship .bar i{display:block;height:100%;background:var(--ink);width:0;transition:width .3s}
+  .cart-sub{display:flex;justify-content:space-between;align-items:baseline;font-weight:700;font-size:17px}
+  .cart-sub b{font-family:'Barlow Condensed';font-style:italic;font-weight:900;font-size:30px}
+  .cart-checkout{background:var(--ink);color:var(--paper);border:0;border-radius:14px;padding:18px;font-size:16px;
+    font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:transform .15s}
+  .cart-checkout:hover{transform:translateY(-1px)}
+  .cart-fine{font-size:12px;color:var(--steel);text-align:center}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(160%);background:var(--ink);
+    color:var(--paper);padding:14px 22px;border-radius:999px;font-weight:600;font-size:14px;z-index:120;
+    transition:transform .3s;display:flex;align-items:center;gap:10px}
+  .toast.show{transform:translateX(-50%)}
+
+  /* PART SEARCH */
+  .part-search{margin:0 0 22px;padding:18px 20px;border:1.5px solid var(--line);border-radius:16px;background:var(--fog)}
+  .part-search label{display:block;font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--steel);margin-bottom:10px}
+  .ps-row{display:flex;gap:10px}
+  .ps-input-wrap{position:relative;flex:1}
+  #partSearch{width:100%;font-size:16px;padding:13px 15px;border:1.5px solid var(--line);border-radius:10px;background:var(--paper);font-family:inherit}
+  #partSearch:focus{outline:0;border-color:var(--ink);box-shadow:0 0 0 3px rgba(0,0,0,.08)}
+  #partSearchBtn{background:var(--ink);color:var(--paper);border:0;border-radius:10px;padding:0 22px;font-weight:700;cursor:pointer}
+  .ps-results{
+    position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:30;
+    background:var(--paper);border:1.5px solid var(--line);border-radius:12px;
+    box-shadow:0 18px 44px rgba(0,0,0,.14);overflow-y:auto;max-height:330px;display:none;
+  }
+  .ps-results.open{display:block}
+  .ps-item{display:flex;justify-content:space-between;align-items:center;gap:14px;
+    padding:11px 14px;cursor:pointer;border-bottom:1px solid var(--line)}
+  .ps-item:last-child{border-bottom:0}
+  .ps-item:hover,.ps-item.active{background:var(--fog)}
+  .ps-item .p{font-weight:700;font-size:14px;white-space:nowrap}
+  .ps-item .d{font-size:12.5px;color:var(--steel);text-align:right}
+  .ps-none{padding:13px 14px;color:var(--steel);font-size:13px}
+  .ps-msg{margin-top:10px;font-size:13px;min-height:18px}
+  .ps-msg.ok{color:#2a7a52}
+  .ps-msg.err{color:#b23b3b}
+
+  /* SPECIALTY */
+  .spec-group{margin-bottom:36px}
+  .spec-fam{font-family:'Barlow Condensed';font-style:italic;font-weight:800;font-size:26px;text-transform:uppercase;margin:0 0 16px}
+  .spec-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+  .spec-card{border:1.5px solid var(--line);border-radius:14px;padding:18px;background:var(--paper);transition:border-color .2s, box-shadow .3s}
+  .spec-card.flash{border-color:var(--ink);box-shadow:0 0 0 4px rgba(0,0,0,.10)}
+  .spec-name{font-weight:700;font-size:15px;line-height:1.35}
+  .spec-meta{font-size:12.5px;color:var(--steel);margin-top:6px}
+  .spec-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:16px;gap:10px}
+  .spec-price{font-family:'Barlow Condensed';font-style:italic;font-weight:900;font-size:22px}
+  .spec-req{font-size:13px;font-weight:600;border-bottom:1.5px solid var(--ink);white-space:nowrap}
+  .spec-add{background:var(--ink);color:var(--paper);border:0;border-radius:9px;padding:9px 16px;font-weight:700;font-size:13px;cursor:pointer;transition:transform .15s}
+  .spec-add:hover{transform:translateY(-1px)}
+
+  /* FULL CATALOG */
+  .cat-controls{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+  #catSearch{flex:1;min-width:240px;font-size:15px;padding:12px 15px;border:1.5px solid var(--line);border-radius:10px;background:var(--paper);font-family:inherit}
+  #catSearch:focus{outline:0;border-color:var(--ink);box-shadow:0 0 0 3px rgba(0,0,0,.08)}
+  .cat-filters{display:flex;gap:8px;flex-wrap:wrap}
+  .cat-filter{border:1.5px solid var(--line);background:var(--paper);border-radius:999px;padding:9px 16px;font-weight:600;font-size:13px;cursor:pointer;transition:background .15s,color .15s}
+  .cat-filter:hover{border-color:var(--ink)}
+  .cat-filter.active{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .cat-table-wrap{border:1.5px solid var(--line);border-radius:14px;overflow:auto;max-height:560px}
+  .cat-table{width:100%;border-collapse:collapse;font-size:14px}
+  .cat-table thead th{position:sticky;top:0;background:var(--fog);text-align:left;padding:13px 14px;
+    font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--steel);border-bottom:1.5px solid var(--line);white-space:nowrap;z-index:1}
+  .cat-table td{padding:12px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+  .cat-table tbody tr{cursor:pointer;transition:background .12s}
+  .cat-table tbody tr:hover{background:var(--fog)}
+  .cat-table tbody tr:last-child td{border-bottom:0}
+  .cat-table .cp{font-weight:700}
+  .cat-table .num{font-variant-numeric:tabular-nums}
+  .cat-none{padding:26px 16px;text-align:center;color:var(--steel);font-size:14px}
+  .cat-count{margin-top:12px;font-size:13px;color:var(--steel)}
+  @media (max-width:760px){
+    .cat-table{font-size:12.5px}
+    .cat-table th,.cat-table td{padding:9px 10px}
+  }
+
   /* placeholder badge */
   .placeholder-banner{
     background:var(--fog);border-bottom:1px solid var(--line);
@@ -272,30 +407,53 @@
     <a href="#top" class="brand">
       <img src="logo.jpg" alt="Race Shim" />
     </a>
-    <div class="nav-links">
+    <div class="nav-links" id="navLinks">
       <a href="#shop">Shop</a>
+      <a href="#specialty">Specialty</a>
+      <a href="#catalog">Catalog</a>
       <a href="#custom">Custom</a>
       <a href="#how">How it works</a>
       <a href="#about">About</a>
       <a href="#faq">FAQ</a>
     </div>
-    <button class="nav-cta" onclick="document.getElementById('shop').scrollIntoView({behavior:'smooth'})">
-      Spec a shim
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-    </button>
+    <div class="nav-actions">
+      <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false" aria-controls="navLinks">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <button class="nav-cta" onclick="scrollToId('shop')">
+        Spec a shim
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 13l7 7 7-7"/></svg>
+      </button>
+      <button class="cart-btn" id="cartBtn" aria-label="Open cart" onclick="openCart()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2l1 4h13l-2 10H8L5 4H2"/><circle cx="9" cy="20" r="1.5" fill="currentColor"/><circle cx="18" cy="20" r="1.5" fill="currentColor"/></svg>
+        <span class="cart-count" id="cartCount">0</span>
+      </button>
+    </div>
   </div>
 </nav>
 
 <section id="top" class="hero">
   <div class="container">
-    <div class="kicker reveal">High performance shock valving shims for racers</div>
+    <div class="kicker reveal">High-performance shock valving shims for racers</div>
     <h1 class="reveal" style="margin-top:8px">Spec your shim. Ship today.</h1>
-    <p class="sub reveal">Pick inner diameter, outer diameter, thickness and shape — one price, one button, shipped the same day. <a href="#faq">New to shim stacks?</a></p>
+    <p class="sub reveal">Pick inner diameter, outer diameter, thickness, and shape — one price, one button, same-day shipping. <a href="#faq">New to shim stacks?</a></p>
   </div>
 </section>
 
 <section id="shop" class="sec">
   <div class="container">
+    <div class="part-search">
+      <label for="partSearch">Search by part number, size, or type</label>
+      <div class="ps-row">
+        <div class="ps-input-wrap">
+          <input id="partSearch" type="text" placeholder="Try “1.350”, “bleed”, “IBC”, or 003-SHM-1210" autocomplete="off"
+                 role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="partResults" />
+          <div id="partResults" class="ps-results" role="listbox" aria-label="Matching parts"></div>
+        </div>
+        <button type="button" id="partSearchBtn">Search</button>
+      </div>
+      <div id="partSearchMsg" class="ps-msg"></div>
+    </div>
     <div class="config">
       <div class="config-left">
         <div class="shim-viewer" id="shimViewer" aria-label="3D preview of your shim">
@@ -305,6 +463,7 @@
         <div class="label">Your shim</div>
         <div class="price" id="priceDisplay">$<span id="priceNum">0.00</span><small id="priceEach">/pack</small></div>
         <div class="summary">
+          <div><span>Part #</span><strong id="sumPart">—</strong></div>
           <div><span>Shape</span><strong id="sumShape">Valve</strong></div>
           <div><span>Inner Ø</span><strong id="sumID">—</strong></div>
           <div><span>Outer Ø</span><strong id="sumOD">—</strong></div>
@@ -396,6 +555,47 @@
   </div>
 </section>
 
+<section id="specialty" class="sec">
+  <div class="container">
+    <div class="sec-head reveal">
+      <div>
+        <div class="kicker">Specialty shims</div>
+        <h2 style="margin-top:10px">Beyond the standard sizes.</h2>
+      </div>
+    </div>
+    <div id="specialtyGrid"></div>
+  </div>
+</section>
+
+<section id="catalog" class="sec">
+  <div class="container">
+    <div class="sec-head reveal">
+      <div>
+        <div class="kicker">Full catalog</div>
+        <h2 style="margin-top:10px">Every part we make.</h2>
+      </div>
+    </div>
+    <div class="cat-controls reveal">
+      <input id="catSearch" type="text" placeholder="Filter by part #, size, or type…" autocomplete="off" />
+      <div class="cat-filters">
+        <button type="button" class="cat-filter active" data-cat="all">All</button>
+        <button type="button" class="cat-filter" data-cat="valve">Valve</button>
+        <button type="button" class="cat-filter" data-cat="bleed">Bleed</button>
+        <button type="button" class="cat-filter" data-cat="specialty">Specialty</button>
+      </div>
+    </div>
+    <div class="cat-table-wrap reveal">
+      <table class="cat-table">
+        <thead><tr>
+          <th>Part #</th><th>Description</th><th>Inner Ø</th><th>Outer Ø</th><th>Thickness</th><th>Notches</th><th>Price</th>
+        </tr></thead>
+        <tbody id="catBody"></tbody>
+      </table>
+    </div>
+    <div id="catCount" class="cat-count"></div>
+  </div>
+</section>
+
 <section id="custom" class="sec" style="background:var(--fog)">
   <div class="container">
     <div class="sec-head reveal">
@@ -424,7 +624,7 @@
       </div>
     </div>
     <div class="steps">
-      <div class="step reveal"><div class="num">01</div><h3>Spec it</h3><p>Pick shape, ID, OD, thickness and quantity. Live price as you go.</p></div>
+      <div class="step reveal"><div class="num">01</div><h3>Spec it</h3><p>Pick shape, ID, OD, thickness, and quantity. Live price as you go.</p></div>
       <div class="step reveal"><div class="num">02</div><h3>We pull it</h3><p>Your order lands in our shop the moment you check out. Real humans pull it off the shelf — no drop-shipping, no middleman.</p></div>
       <div class="step reveal"><div class="num">03</div><h3>Back to racing</h3><p>Ships the same day if ordered before cutoff. Track your order and get back to tuning.</p></div>
     </div>
@@ -463,7 +663,7 @@
       <details class="reveal"><summary>Do you ship same day?</summary><p>Yes — if your order lands before the daily cutoff, it ships same day. Otherwise it goes out next business morning.</p></details>
       <details class="reveal"><summary>How much is shipping?</summary><p><strong>$6.95 flat</strong> on orders under $100. Anything $100 or more ships <strong>free</strong>, automatically — no code needed.</p></details>
       <details class="reveal"><summary>Bulk orders?</summary><p>Shock builders and race teams — reach out for open-account terms and team pricing.</p></details>
-      <details class="reveal"><summary>Returns?</summary><p>Unopened shims in original packaging can come back within 30 days. We can't take back opened/used stacks for obvious reasons.</p></details>
+      <details class="reveal"><summary>Returns?</summary><p>Unopened shims in their original packaging can be returned within 30 days. We can't accept opened or used stacks, for safety and quality reasons.</p></details>
     </div>
   </div>
 </section>
@@ -492,18 +692,31 @@
         <li><a href="mailto:hello@raceshim.com">Contact</a></li>
       </ul>
     </div>
-    <div>
-      <h4>Follow</h4>
-      <ul>
-        <li><a href="#">Instagram</a></li>
-        <li><a href="#">Facebook</a></li>
-      </ul>
-    </div>
   </div>
   <div class="container foot-bottom">
     <div>© <span id="yr"></span> Race Shim. All rights reserved.</div>
   </div>
 </footer>
+
+<!-- CART DRAWER -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<aside class="cart-drawer" id="cartDrawer" role="dialog" aria-modal="true" aria-label="Your cart">
+  <div class="cart-head">
+    <h3>Your cart</h3>
+    <button class="cart-close" aria-label="Close cart" onclick="closeCart()">&times;</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-foot" id="cartFoot" style="display:none">
+    <div class="cart-ship" id="cartShip"></div>
+    <div class="cart-sub"><span>Subtotal</span><b id="cartSubtotal">$0.00</b></div>
+    <button class="cart-checkout" id="cartCheckout" onclick="checkout()">
+      Checkout
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+    </button>
+    <div class="cart-fine">Shipping &amp; taxes calculated at checkout.</div>
+  </div>
+</aside>
+<div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
 <script>
   // Footer year
@@ -515,22 +728,105 @@
   },{threshold:.1});
   document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 
-  // Shape toggle
-  let shape = 'valve';
-  const NOTCH_OPTIONS = [0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32];
-  function fmtNotch(n){ return n === 0.5 ? '0.5' : String(n); }
-  function populateNotches(){
-    const sel = document.getElementById('notchSel');
-    const prev = sel.value;
-    // 0.870" OD bleed shims only support notch counts 1–6 (locked 2026-04-28)
-    const od = parseFloat(document.getElementById('odSel').value);
-    const isOD870 = od && Math.abs(od - 22.098) < 1e-6;
-    const opts = isOD870 ? [1, 2, 3, 4, 5, 6] : NOTCH_OPTIONS;
-    sel.innerHTML = '<option value="">Choose notch count</option>' +
-      opts.map(n=>'<option value="'+n+'">'+fmtNotch(n)+'</option>').join('');
-    if(prev && opts.some(n => String(n) === prev)) sel.value = prev;
+  // Smooth-scroll to a section, offset so the heading clears the sticky nav.
+  function scrollToId(id){
+    const el = document.getElementById(id); if(!el) return;
+    const offset = window.matchMedia('(max-width:760px)').matches ? 84 : 144;
+    const top = el.getBoundingClientRect().top + window.pageYOffset - offset;
+    window.scrollTo({ top, behavior:'smooth' });
   }
-  populateNotches();
+
+  // Mobile hamburger menu
+  (function(){
+    const toggle = document.getElementById('navToggle');
+    const links  = document.getElementById('navLinks');
+    if(!toggle || !links) return;
+    toggle.addEventListener('click', ()=>{
+      const open = links.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    links.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>{
+      links.classList.remove('open');
+      toggle.setAttribute('aria-expanded','false');
+    }));
+  })();
+
+  // ===== Catalog-driven configurator =====
+  // Reads the full FK shim catalog (catalog.json) so only REAL, in-catalog combos are
+  // selectable, and the exact FK part number shows for whatever the customer specs.
+  let shape = 'valve';
+  let unit  = 'imperial';
+  const IN2MM = 25.4;
+  const numOf = (s)=> parseFloat(String(s).replace(/[^0-9.]/g,'')) || 0;
+
+  // Trees built from catalog.json on load:
+  //   VTREE[idDisp] = { mm, ods: { odDisp: { mm, ths: { thDisp: {mm, part, price} } } } }
+  //   BTREE[idDisp] = { mm, ods: { odDisp: { mm, notches: { n: {part, price} } } } }  (bleed thickness fixed .006")
+  const VTREE = {}, BTREE = {};
+  function addValve(r){
+    const I = (VTREE[r.id_disp] = VTREE[r.id_disp] || {mm:r.id*IN2MM, ods:{}});
+    const O = (I.ods[r.od_disp] = I.ods[r.od_disp] || {mm:r.od*IN2MM, ths:{}});
+    O.ths[r.thk_disp] = {mm:r.thk*IN2MM, part:r.part, price:r.price};
+  }
+  function addBleed(r){
+    const I = (BTREE[r.id_disp] = BTREE[r.id_disp] || {mm:r.id*IN2MM, ods:{}});
+    const O = (I.ods[r.od_disp] = I.ods[r.od_disp] || {mm:r.od*IN2MM, notches:{}});
+    O.notches[String(r.notch)] = {part:r.part, price:r.price};
+  }
+  function buildTrees(cat){
+    cat.forEach(r=>{
+      if(r.category==='valve' && r.id_disp && r.od_disp && r.thk_disp) addValve(r);
+      else if(r.category==='bleed' && r.id_disp && r.od_disp && r.notch!=null) addBleed(r);
+    });
+  }
+  const tree = ()=> shape==='bleed' ? BTREE : VTREE;
+  const sortKeys = (obj)=> Object.keys(obj).sort((a,b)=> numOf(a)-numOf(b));
+  const selText = (id)=>{ const s=document.getElementById(id); if(!s||!s.value) return ''; const o=s.options[s.selectedIndex]; return (o.dataset && o.dataset.disp) ? o.dataset.disp : o.text; };
+
+  function fillSel(id, items, placeholder){
+    const sel=document.getElementById(id), prev=sel.value;
+    if(!items.length){ sel.innerHTML='<option value="">'+placeholder+'</option>'; sel.disabled=true; return; }
+    sel.disabled=false;
+    sel.innerHTML='<option value="">'+placeholder+'</option>'+
+      items.map(it=>'<option value="'+it.mm+'" data-disp="'+String(it.disp).replace(/"/g,'&quot;')+'">'+it.disp+'</option>').join('');
+    if(prev && [...sel.options].some(o=>o.value===prev)) sel.value=prev;
+  }
+  function populateSelect(id){
+    if(id==='idSel'){
+      const t=tree();
+      fillSel('idSel', sortKeys(t).map(k=>({disp:k, mm:t[k].mm})), 'Choose ID');
+    } else if(id==='odSel'){
+      const node = tree()[selText('idSel')];
+      if(!node){ fillSel('odSel', [], 'Choose ID first'); return; }
+      fillSel('odSel', sortKeys(node.ods).map(k=>({disp:k, mm:node.ods[k].mm})), 'Choose OD');
+    } else if(id==='thSel'){
+      if(shape==='bleed'){ fillSel('thSel', [{disp:'.006"', mm:0.1524}], 'Thickness'); document.getElementById('thSel').value='0.1524'; return; }
+      const node = VTREE[selText('idSel')] && VTREE[selText('idSel')].ods[selText('odSel')];
+      if(!node){ fillSel('thSel', [], 'Choose OD first'); return; }
+      fillSel('thSel', sortKeys(node.ths).map(k=>({disp:k, mm:node.ths[k].mm})), 'Choose thickness');
+    }
+  }
+  function populateNotches(){
+    const sel=document.getElementById('notchSel'), prev=sel.value;
+    const node = BTREE[selText('idSel')] && BTREE[selText('idSel')].ods[selText('odSel')];
+    const opts = node ? Object.keys(node.notches).sort((a,b)=> parseFloat(a)-parseFloat(b)) : [];
+    sel.innerHTML='<option value="">Choose notch count</option>'+opts.map(n=>'<option value="'+n+'">'+n+'</option>').join('');
+    if(prev && opts.includes(prev)) sel.value=prev;
+  }
+  function currentSKU(){
+    const i=selText('idSel'), o=selText('odSel');
+    if(shape==='bleed'){
+      const n=document.getElementById('notchSel').value;
+      const node=BTREE[i] && BTREE[i].ods[o];
+      return (node && n && node.notches[n]) ? node.notches[n] : null;
+    }
+    const t=selText('thSel');
+    const node=VTREE[i] && VTREE[i].ods[o];
+    return (node && t && node.ths[t]) ? node.ths[t] : null;
+  }
+  function unitPrice(){ const s=currentSKU(); return s ? (Number(s.price)||0) : 0; }
+  function currentPart(){ const s=currentSKU(); return s ? s.part : ''; }
+
   function applyShape(){
     const isBleed = shape === 'bleed';
     document.getElementById('notchField').style.display = isBleed ? '' : 'none';
@@ -538,244 +834,481 @@
     document.getElementById('qtyLabel').textContent = isBleed ? '7. Quantity' : '6. Quantity';
     document.getElementById('sumShape').textContent = isBleed ? 'Bleed' : 'Valve';
   }
+
+  const qtyInput = document.getElementById('qtyInput');
+  function changeQty(delta){ let v=parseInt(qtyInput.value,10)||1; v=Math.max(1,Math.min(500,v+delta)); qtyInput.value=v; computePrice(); }
+
+  function computePrice(){
+    const qty = Math.max(1, parseInt(qtyInput.value,10) || 1);
+    const perShim = unitPrice();
+    const total = perShim * qty;
+    const freeShip = total >= 100;
+    document.getElementById('sumQty').textContent = qty;
+    document.getElementById('sumPart').textContent = currentPart() || '—';
+    document.getElementById('sumID').textContent  = selText('idSel') || '—';
+    document.getElementById('sumOD').textContent  = selText('odSel') || '—';
+    document.getElementById('sumTh').textContent  = shape==='bleed' ? (currentSKU() ? '.006"' : '—') : (selText('thSel') || '—');
+    document.getElementById('sumNotch').textContent = document.getElementById('notchSel').value || '—';
+    document.getElementById('sumUnit').textContent = perShim ? '$' + perShim.toFixed(2) : '—';
+    document.getElementById('priceNum').textContent = total.toFixed(2);
+    document.getElementById('priceEach').textContent = qty === 1 ? '/shim' : '/pack of ' + qty + (freeShip ? ' · free shipping' : '');
+    const hint = document.getElementById('bulkHint');
+    if(!perShim) hint.textContent = 'Orders $100+ ship free.';
+    else if(freeShip) hint.textContent = '✓ Free shipping unlocked ($100+).';
+    else hint.textContent = '$' + (100 - total).toFixed(2) + ' more for free shipping.';
+  }
+
+  // Shape buttons
   document.querySelectorAll('[data-shape]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       document.querySelectorAll('[data-shape]').forEach(b=>b.setAttribute('aria-pressed','false'));
       btn.setAttribute('aria-pressed','true');
       shape = btn.dataset.shape;
       applyShape();
-      // Bleed restricts the OD lineup — repopulate OD (and therefore thickness + notches) on shape change
-      populateSelect('odSel');
-      populateSelect('thSel');
-      populateNotches();
+      populateSelect('idSel'); populateSelect('odSel'); populateSelect('thSel'); populateNotches();
       computePrice();
     });
   });
-  document.getElementById('notchSel').addEventListener('change', computePrice);
-
-  // Unit toggle — canonical value is always mm; display text switches to inches when imperial.
-  // Metric is intentionally "coming soon" across the board for now (null mmDisp = filtered out in metric mode).
-  let unit = 'imperial';
-  // Bleed shims only ship in 0.870", 1.200", 1.350" (locked 2026-04-27)
-  const BLEED_ODS_MM = [22.098, 30.480, 34.290];
-  const DIMS = {
-    idSel: {
-      placeholder: 'Choose ID',
-      rows: [
-        {mm:8,    inDisp:'0.315"', mmDisp:null},
-        {mm:12.7, inDisp:'0.500"', mmDisp:null},
-      ]
-    },
-    odSel: {
-      placeholder: 'Choose OD',
-      // ODs depend on which ID is selected — these map by the ID's canonical mm value
-      rowsByID: {
-        '8': [
-          {mm:10.998, inDisp:'0.433"', mmDisp:null},
-          {mm:13.005, inDisp:'0.512"', mmDisp:null},
-          {mm:16.002, inDisp:'0.630"', mmDisp:null},
-          {mm:18.999, inDisp:'0.748"', mmDisp:null},
-          {mm:22.098, inDisp:'0.870"', mmDisp:null},
-        ],
-        '12.7': [
-          {mm:15.748, inDisp:'0.620"', mmDisp:null},
-          {mm:19.050, inDisp:'0.750"', mmDisp:null},
-          {mm:22.860, inDisp:'0.900"', mmDisp:null},
-          {mm:26.670, inDisp:'1.050"', mmDisp:null},
-          {mm:30.480, inDisp:'1.200"', mmDisp:null},
-          {mm:34.290, inDisp:'1.350"', mmDisp:null},
-        ]
-      }
-    },
-    thSel: {
-      placeholder: 'Choose thickness',
-      // `onlyForOD` (optional) restricts the thickness to specific OD canonical mm values
-      rows: [
-        {mm:0.1016, inDisp:'0.004"', mmDisp:null},
-        {mm:0.1524, inDisp:'0.006"', mmDisp:null},
-        {mm:0.2032, inDisp:'0.008"', mmDisp:null},
-        {mm:0.2540, inDisp:'0.010"', mmDisp:null},
-        {mm:0.3048, inDisp:'0.012"', mmDisp:null},
-        {mm:0.3810, inDisp:'0.015"', mmDisp:null},
-        {mm:0.5080, inDisp:'0.020"', mmDisp:null},
-        {mm:0.7620, inDisp:'0.030"', mmDisp:null, onlyForOD:[10.998, 15.748]},
-      ]
-    }
-  };
-  function populateSelect(id){
-    const sel = document.getElementById(id);
-    const prev = sel.value;
-    const cfg = DIMS[id];
-    let rows;
-    if(id === 'odSel'){
-      // OD depends on which ID is currently selected
-      const currentID = document.getElementById('idSel').value;
-      rows = (currentID && cfg.rowsByID[currentID]) ? cfg.rowsByID[currentID] : [];
-      // Bleed shims only ship in three ODs (0.870", 1.200", 1.350")
-      if(shape === 'bleed'){
-        rows = rows.filter(r => BLEED_ODS_MM.some(od => Math.abs(od - r.mm) < 1e-6));
-      }
-    } else if(id === 'thSel'){
-      // Bleed shims only available in 0.006" thickness (locked 2026-04-28).
-      // Otherwise some thicknesses are restricted to specific ODs (via `onlyForOD`).
-      if(shape === 'bleed'){
-        rows = cfg.rows.filter(r => Math.abs(r.mm - 0.1524) < 1e-6);
-      } else {
-        const currentOD = parseFloat(document.getElementById('odSel').value);
-        rows = cfg.rows.filter(r => {
-          if(!r.onlyForOD) return true;
-          return currentOD && r.onlyForOD.some(od => Math.abs(od - currentOD) < 1e-6);
-        });
-      }
-    } else {
-      rows = cfg.rows;
-    }
-    rows = rows.filter(r => unit==='imperial' ? r.inDisp : r.mmDisp);
-    if(rows.length === 0){
-      // Differentiate: imperial OD with no ID picked = "Choose an ID first"; everything else = "Coming soon"
-      const emptyLabel = (id === 'odSel' && unit === 'imperial' && !document.getElementById('idSel').value)
-        ? 'Choose ID first'
-        : 'Coming soon';
-      sel.innerHTML = '<option value="">'+emptyLabel+'</option>';
-      sel.disabled = true;
-      return;
-    }
-    sel.disabled = false;
-    sel.innerHTML = '<option value="">'+cfg.placeholder+'</option>' +
-      rows.map(r=>'<option value="'+r.mm+'">'+(unit==='imperial'?r.inDisp:r.mmDisp)+'</option>').join('');
-    if(prev && rows.some(r => String(r.mm) === prev)) sel.value = prev;
-  }
-  function refreshUnits(){
-    ['idSel','odSel','thSel'].forEach(populateSelect);
-    computePrice();
-  }
+  // Unit buttons — metric stays "coming soon" (catalog is imperial only for now)
   document.querySelectorAll('[data-unit]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
+      // Catalog is imperial-only for now — Metric is a no-op so it can't get stuck "selected".
+      if(btn.dataset.unit === 'metric'){ toast('Metric is coming soon — imperial only for now.'); return; }
       document.querySelectorAll('[data-unit]').forEach(b=>b.setAttribute('aria-pressed','false'));
       btn.setAttribute('aria-pressed','true');
       unit = btn.dataset.unit;
-      refreshUnits();
     });
   });
-  // Populate selects once now; computePrice() at bottom of script handles first render
-  ['idSel','odSel','thSel'].forEach(populateSelect);
-
-  // Quantity
-  const qtyInput = document.getElementById('qtyInput');
-  function changeQty(delta){
-    let v = parseInt(qtyInput.value,10) || 1;
-    v = Math.max(1, Math.min(500, v + delta));
-    qtyInput.value = v;
-    computePrice();
-  }
   qtyInput.addEventListener('input', computePrice);
+  document.getElementById('idSel').addEventListener('change', ()=>{ populateSelect('odSel'); populateSelect('thSel'); populateNotches(); computePrice(); });
+  document.getElementById('odSel').addEventListener('change', ()=>{ populateSelect('thSel'); populateNotches(); computePrice(); });
   document.getElementById('thSel').addEventListener('change', computePrice);
-  // ID drives which ODs are available — repopulate OD (and therefore thickness) on ID change
-  document.getElementById('idSel').addEventListener('change', ()=>{
-    populateSelect('odSel');
-    populateSelect('thSel');
+  document.getElementById('notchSel').addEventListener('change', computePrice);
+
+  // ---- Part-number search: type a part # -> load the shim ----
+  function setConfiguratorTo(rec){
+    const sb=document.querySelector('[data-shape="'+(rec.shape==='bleed'?'bleed':'valve')+'"]');
+    if(sb) sb.click();
+    const setSel=(id,disp)=>{ const s=document.getElementById(id); const o=[...s.options].find(x=>(x.dataset.disp||x.text)===disp); if(o){ s.value=o.value; s.dispatchEvent(new Event('change')); } };
+    setSel('idSel', rec.id_disp);
+    setSel('odSel', rec.od_disp);
+    if(rec.shape==='bleed'){ const ns=document.getElementById('notchSel'); if([...ns.options].some(o=>o.value===String(rec.notch))){ ns.value=String(rec.notch); ns.dispatchEvent(new Event('change')); } }
+    else { setSel('thSel', rec.thk_disp); }
     computePrice();
-  });
-  // OD drives which thicknesses + bleed notch counts are available (e.g. 0.030" only with 0.433" / 0.620"; 0.870" bleed = notches 1–6 only)
-  document.getElementById('odSel').addEventListener('change', ()=>{
-    populateSelect('thSel');
-    populateNotches();
+    scrollToId('shop');
+  }
+  function specId(part){ return 'spec-'+String(part).replace(/[^A-Za-z0-9]/g,''); }
+  // Build a clean "Found" label from the nominal display dims (keeps .500" nominal, not .502" actual).
+  function foundLabel(rec){
+    if(rec.category === 'specialty') return prettyName(rec.desc || rec.name || rec.part);
+    const b = [];
+    if(rec.id_disp) b.push(rec.id_disp + ' ID');
+    if(rec.od_disp) b.push(rec.od_disp + ' OD');
+    if(rec.category === 'bleed'){ b.push('.006"'); if(rec.notch != null) b.push(rec.notch + ' notch'); }
+    else if(rec.thk_disp) b.push(rec.thk_disp);
+    return b.join(' · ');
+  }
+  // Google-style search: rank catalog rows against the query across part #, dimensions,
+  // family/type and description. Returns the best matches (most-relevant first).
+  function searchParts(q){
+    const cat = window.__CATALOG || [];
+    const norm = String(q||'').trim().toUpperCase();
+    if(!norm) return [];
+    const tokens = norm.split(/\s+/).filter(Boolean);
+    const hayOf = r => [r.part, r.desc, r.name, r.family, r.application, r.id_disp, r.od_disp, r.thk_disp, r.category,
+                        (r.notch!=null ? r.notch+' notch' : '')].join(' ').toUpperCase();
+    const scored = [];
+    cat.forEach(r=>{
+      const part = String(r.part).toUpperCase();
+      const hay = hayOf(r);
+      if(!tokens.every(t=>hay.includes(t))) return;   // every word must match somewhere
+      let s = 0;
+      if(part === norm) s += 1000;                      // exact part number
+      else if(part.includes(norm)) s += 400;            // whole query inside the part #
+      if(part.endsWith('-'+norm)) s += 250;             // tail match e.g. "1210"
+      tokens.forEach(t=>{ if(part.includes(t)) s += 40; });
+      scored.push({ r, s });
+    });
+    scored.sort((a,b)=> b.s - a.s
+      || String(a.r.part).length - String(b.r.part).length   // simpler/primary SKUs before notch variants
+      || String(a.r.part).localeCompare(String(b.r.part)));
+    return scored.slice(0, 8).map(x=>x.r);
+  }
+
+  let psResults = [], psActive = -1;
+  function renderResults(list){
+    const box = document.getElementById('partResults'), inp = document.getElementById('partSearch');
+    if(!box) return;
+    psResults = list; psActive = -1;
+    if(!list.length){
+      box.innerHTML = '<div class="ps-none">No matches — try a part #, a size like 1.350, or a type like “bleed”.</div>';
+    } else {
+      box.innerHTML = list.map((r,i)=>
+        '<div class="ps-item" role="option" data-i="'+i+'"><span class="p">'+esc(r.part)+'</span>'
+        + '<span class="d">'+esc(foundLabel(r)||'')+'</span></div>'
+      ).join('');
+    }
+    box.classList.add('open'); if(inp) inp.setAttribute('aria-expanded','true');
+  }
+  function closeResults(){
+    const box=document.getElementById('partResults'), inp=document.getElementById('partSearch');
+    if(box) box.classList.remove('open');
+    if(inp) inp.setAttribute('aria-expanded','false');
+    psActive = -1;
+  }
+  function moveActive(d){
+    const box=document.getElementById('partResults'); if(!box) return;
+    const items=[...box.querySelectorAll('.ps-item')]; if(!items.length) return;
+    psActive = (psActive + d + items.length) % items.length;
+    items.forEach((el,i)=>el.classList.toggle('active', i===psActive));
+    items[psActive].scrollIntoView({block:'nearest'});
+  }
+  function selectRec(rec){
+    const msg=document.getElementById('partSearchMsg'), inp=document.getElementById('partSearch');
+    if(inp) inp.value = rec.part;
+    closeResults();
+    msg.className='ps-msg ok'; msg.textContent='Showing '+rec.part+(foundLabel(rec)?' — '+foundLabel(rec):'');
+    if(rec.category==='specialty'){
+      const el=document.getElementById(specId(rec.part));
+      if(el){ el.scrollIntoView({behavior:'smooth',block:'center'}); el.classList.add('flash'); setTimeout(()=>el.classList.remove('flash'),1600); }
+    } else { setConfiguratorTo(rec); }
+  }
+  // Enter / Search button: take the highlighted row, else the top match.
+  function commitSearch(){
+    const inp=document.getElementById('partSearch'), msg=document.getElementById('partSearchMsg');
+    if(psActive>=0 && psResults[psActive]){ selectRec(psResults[psActive]); return; }
+    const list = searchParts(inp.value);
+    if(list.length){ selectRec(list[0]); return; }
+    closeResults();
+    msg.className='ps-msg err';
+    msg.textContent='No matches for “'+String(inp.value||'').trim()+'”. Try a part #, a size, or a type like “bleed”.';
+  }
+  function wirePartSearch(){
+    const inp=document.getElementById('partSearch'), btn=document.getElementById('partSearchBtn'), box=document.getElementById('partResults');
+    if(!inp) return;
+    inp.addEventListener('input', ()=>{
+      const v=inp.value;
+      if(!v.trim()){ closeResults(); document.getElementById('partSearchMsg').textContent=''; return; }
+      renderResults(searchParts(v));
+    });
+    inp.addEventListener('keydown', e=>{
+      if(e.key==='ArrowDown'){ e.preventDefault(); moveActive(1); }
+      else if(e.key==='ArrowUp'){ e.preventDefault(); moveActive(-1); }
+      else if(e.key==='Enter'){ e.preventDefault(); commitSearch(); }
+      else if(e.key==='Escape'){ closeResults(); }
+    });
+    inp.addEventListener('focus', ()=>{ if(inp.value.trim()) renderResults(searchParts(inp.value)); });
+    if(btn) btn.addEventListener('click', commitSearch);
+    // mousedown (not click) so selecting fires before the input's blur closes the list
+    if(box) box.addEventListener('mousedown', e=>{
+      const it=e.target.closest('.ps-item'); if(!it) return;
+      e.preventDefault();
+      const i=parseInt(it.dataset.i,10);
+      if(psResults[i]) selectRec(psResults[i]);
+    });
+    document.addEventListener('click', e=>{ if(!e.target.closest('.part-search')) closeResults(); });
+  }
+
+  // ---- Specialty section ----
+  // Display-only polish for the card title: shows "Shim" instead of the internal "SHM",
+  // a proper em dash, and a × between dimensions. Never touches catalog data or part #s.
+  function prettyName(s){
+    return String(s)
+      .replace(/\bSHM\b/g, 'Shim')
+      .replace(/\s-\s/g, ' — ')
+      .replace(/(\d)\s+x\s+([.\d])/g, '$1 × $2');
+  }
+  function renderSpecialty(cat){
+    const grid=document.getElementById('specialtyGrid'); if(!grid) return;
+    const items=cat.filter(r=>r.category==='specialty');
+    if(!items.length){ grid.innerHTML='<p style="color:var(--steel)">No specialty shims listed.</p>'; return; }
+    const groups={}; items.forEach(r=>{ const f=r.family||'Other'; (groups[f]=groups[f]||[]).push(r); });
+    const dimLine=(r)=>{ const b=[]; if(r.id_disp)b.push('ID '+r.id_disp); if(r.od_disp)b.push('OD '+r.od_disp); if(r.thk_disp)b.push(r.thk_disp); return b.join(' · '); };
+    grid.innerHTML=Object.keys(groups).sort().map(fam=>
+      '<div class="spec-group"><h3 class="spec-fam">'+esc(fam)+'</h3><div class="spec-cards">'+
+      groups[fam].map(r=>{
+        return '<div class="spec-card" id="'+specId(r.part)+'">'
+          +'<div class="spec-name">'+esc(prettyName(r.desc||r.name||r.part))+'</div>'
+          +'<div class="spec-meta">'+esc(r.part)+(dimLine(r)?' · '+esc(dimLine(r)):'')+'</div>'
+          +'<div class="spec-bottom"><span class="spec-price">'+(r.price!=null?'$'+Number(r.price).toFixed(2):'')+'</span>'
+          +'<button class="spec-add" type="button" onclick="addSpecialty(\''+r.part+'\')">Add to cart</button></div></div>';
+      }).join('')+'</div></div>'
+    ).join('');
+  }
+
+  // Add a specialty shim to the cart. Specialty prices are only $1.50 or $3.75, so each rides
+  // the matching existing Shopify product (Valve Shim $1.50 / Bleed Shim $3.75); the part # +
+  // type ride as line-item properties so the shop pulls the exact shim.
+  function addSpecialty(part){
+    const rec=(window.__CATALOG||[]).find(r=>String(r.part)===String(part));
+    if(!rec) return;
+    const price=Number(rec.price)||0;
+    const variantId=(price===3.75)?SHIM_VARIANTS.bleed:SHIM_VARIANTS.valve;
+    const props={ 'Part #':rec.part, 'Type':(rec.family||'Specialty')+' shim', 'Source':'Race Shim' };
+    if(rec.id_disp) props['Inner diameter']=rec.id_disp;
+    if(rec.od_disp) props['Outer diameter']=rec.od_disp;
+    if(rec.thk_disp) props['Thickness']=rec.thk_disp;
+    if(rec.application) props['Application']=rec.application;
+    const dims=[]; if(rec.id_disp)dims.push('ID '+rec.id_disp); if(rec.od_disp)dims.push('OD '+rec.od_disp); if(rec.thk_disp)dims.push(rec.thk_disp);
+    const name=rec.part+' · '+(rec.desc||rec.name||'Specialty shim');
+    const spec=dims.join(' · ')||(rec.desc||'');
+    const sig='spec|'+rec.part;
+    const existing=cart.find(l=>l.sig===sig);
+    if(existing){ existing.qty=Math.min(500, existing.qty+1); }
+    else { cart.push({ sig, name, spec, shape:(price===3.75?'bleed':'valve'), variantId, qty:1, unitPrice:price, props }); }
+    saveCart(); renderCart(); openCart(); toast('Added to cart');
+  }
+
+  // ---- Full catalog table ----
+  let catFilter = 'all';
+  function catTypeLabel(r){
+    if(r.category==='specialty') return prettyName(r.desc || r.name || (r.family||'Specialty')+' shim');
+    return r.category==='bleed' ? 'Bleed shim' : 'Valve shim';
+  }
+  function renderCatalog(){
+    const body=document.getElementById('catBody'); if(!body) return;
+    const cat=window.__CATALOG||[];
+    const q=String(document.getElementById('catSearch').value||'').trim().toUpperCase();
+    const tokens=q.split(/\s+/).filter(Boolean);
+    const hayOf=r=>[r.part, r.desc, r.name, r.family, r.id_disp, r.od_disp, r.thk_disp, r.category,
+                    (r.notch!=null?r.notch+' notch':'')].join(' ').toUpperCase();
+    const order={valve:0, bleed:1, specialty:2};
+    const rows=cat.filter(r=> (catFilter==='all'||r.category===catFilter) && tokens.every(t=>hayOf(r).includes(t)))
+      .sort((a,b)=> (order[a.category]-order[b.category]) || String(a.part).localeCompare(String(b.part)));
+    if(!rows.length){
+      body.innerHTML='<tr><td colspan="7" class="cat-none">No parts match — try a different part #, size, or type.</td></tr>';
+    } else {
+      body.innerHTML=rows.map(r=>{
+        const thk = r.category==='bleed' ? '.006"' : (r.thk_disp || '—');
+        const notch = (r.category==='bleed' && r.notch!=null) ? esc(String(r.notch)) : '—';
+        const price = r.price!=null ? '$'+Number(r.price).toFixed(2) : '—';
+        return '<tr data-part="'+esc(r.part)+'">'
+          + '<td class="cp">'+esc(r.part)+'</td>'
+          + '<td>'+esc(catTypeLabel(r))+'</td>'
+          + '<td class="num">'+esc(r.id_disp||'—')+'</td>'
+          + '<td class="num">'+esc(r.od_disp||'—')+'</td>'
+          + '<td class="num">'+esc(thk)+'</td>'
+          + '<td class="num">'+notch+'</td>'
+          + '<td class="num">'+price+'</td></tr>';
+      }).join('');
+    }
+    const countEl=document.getElementById('catCount');
+    if(countEl) countEl.textContent = rows.length+' of '+cat.length+' parts'+(catFilter!=='all'||tokens.length?' shown':'');
+  }
+  function openPart(part){
+    const rec=(window.__CATALOG||[]).find(r=>String(r.part)===String(part));
+    if(!rec) return;
+    if(rec.category==='specialty'){
+      const el=document.getElementById(specId(rec.part));
+      if(el){ el.scrollIntoView({behavior:'smooth',block:'center'}); el.classList.add('flash'); setTimeout(()=>el.classList.remove('flash'),1600); }
+    } else { setConfiguratorTo(rec); }
+  }
+  function wireCatalog(){
+    const search=document.getElementById('catSearch'), body=document.getElementById('catBody');
+    if(search) search.addEventListener('input', renderCatalog);
+    document.querySelectorAll('.cat-filter').forEach(btn=>btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.cat-filter').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active'); catFilter=btn.dataset.cat; renderCatalog();
+    }));
+    if(body) body.addEventListener('click', e=>{ const tr=e.target.closest('tr[data-part]'); if(tr) openPart(tr.dataset.part); });
+  }
+
+  // Load the catalog, then populate everything
+  fetch('catalog.json').then(r=>r.json()).then(cat=>{
+    window.__CATALOG = cat;
+    buildTrees(cat);
+    applyShape();
+    populateSelect('idSel'); populateSelect('odSel'); populateSelect('thSel'); populateNotches();
     computePrice();
+    renderSpecialty(cat);
+    wirePartSearch();
+    renderCatalog();
+    wireCatalog();
+  }).catch(err=>{
+    console.error('catalog load failed', err);
+    const hint=document.getElementById('bulkHint'); if(hint) hint.textContent='Catalog failed to load — refresh.';
   });
 
-  // Pricing (LOCKED 2026-04-23): flat per-shim rate by shape
-  //   Valve: $1.50 each
-  //   Bleed: $3.75 each
-  // Requires ID, OD, and thickness to all be picked before price shows.
-  // Shipping: free on orders $100+; flat $6.95 below.
-  function unitPrice(){
-    const od = parseFloat(document.getElementById('odSel').value) || 0;
-    const th = parseFloat(document.getElementById('thSel').value) || 0;
-    const id = parseFloat(document.getElementById('idSel').value) || 0;
-    if(!od || !th || !id) return 0;
-    return shape === 'bleed' ? 3.75 : 1.50;
-  }
-  function computePrice(){
-    const qty = Math.max(1, parseInt(qtyInput.value,10) || 1);
-    const perShim = unitPrice();
-    const total = perShim * qty;
-    const freeShip = total >= 100;
-
-    const selDisplay = (id)=>{
-      const s = document.getElementById(id);
-      return s.value ? s.options[s.selectedIndex].text : '—';
-    };
-    document.getElementById('sumQty').textContent = qty;
-    document.getElementById('sumID').textContent  = selDisplay('idSel');
-    document.getElementById('sumOD').textContent  = selDisplay('odSel');
-    document.getElementById('sumTh').textContent  = selDisplay('thSel');
-    document.getElementById('sumNotch').textContent = selDisplay('notchSel');
-    document.getElementById('sumUnit').textContent = perShim ? '$' + perShim.toFixed(2) : '—';
-    document.getElementById('priceNum').textContent = total.toFixed(2);
-    document.getElementById('priceEach').textContent = qty === 1 ? '/shim' : '/pack of ' + qty + (freeShip ? ' · free shipping' : '');
-
-    // shipping hint
-    const hint = document.getElementById('bulkHint');
-    if(!perShim) hint.textContent = 'Orders $100+ ship free.';
-    else if(freeShip) hint.textContent = '✓ Free shipping unlocked ($100+).';
-    else hint.textContent = '$' + (100 - total).toFixed(2) + ' more for free shipping.';
-  }
-  computePrice();
-
-  // ===== Shopify checkout wiring =====
-  // Race Shim sells through Factory Kahne's existing Shopify store. This hands the shopper
-  // straight into Shopify's own hosted checkout with the picked spec attached. It uses a plain
-  // cart form — NO API keys, and NOTHING here can read, change, or reach the store's admin or
-  // its other products. Fill in two things and checkout goes live:
-  //   1. SHOP_DOMAIN   — the store's *.myshopify.com address
-  //   2. SHIM_VARIANTS — the numeric variant ID of each product: "Valve Shim" ($1.50) + "Bleed Shim" ($3.75)
-  //                      (open the product in the admin; the variant ID is the long number at the end of the URL)
+  // ===== Cart + Shopify checkout =====
+  // Race Shim sells through Factory Kahne's existing Shopify store. Shoppers build a multi-line
+  // cart here (racers order whole stacks — many specs in one order), then hand off to Shopify's
+  // hosted checkout with every line + its spec attached. Plain cart form — NO API keys, nothing
+  // here can read, change, or reach the store's admin or other products.
+  //   SHOP_DOMAIN   — the store's *.myshopify.com address
+  //   SHIM_VARIANTS — numeric variant ID of "Valve Shim" ($1.50) + "Bleed Shim" ($3.75)
   const SHOP_DOMAIN   = 'raceshim.myshopify.com';
   const SHIM_VARIANTS = { valve: '47075054911644', bleed: '47075056222364' };
+  const FREE_SHIP = 100;
   const checkoutConfigured = ()=>
        !SHOP_DOMAIN.startsWith('YOUR-')
     && /^\d+$/.test(SHIM_VARIANTS.valve)
     && /^\d+$/.test(SHIM_VARIANTS.bleed);
 
   const addBtn  = document.getElementById('addBtn');
-  const selText = (id)=>{ const s = document.getElementById(id); return s && s.value ? s.options[s.selectedIndex].text : ''; };
+
+  // --- cart state (persists across page loads so a half-built stack survives a refresh) ---
+  const CART_KEY = 'raceshim_cart_v1';
+  let cart = [];
+  // Validate + coerce each line on load so a garbled/old-format blob can't produce $NaN totals.
+  try {
+    const raw = JSON.parse(localStorage.getItem(CART_KEY));
+    cart = Array.isArray(raw) ? raw
+      .filter(l => l && typeof l === 'object' && l.sig && l.variantId)
+      .map(l => ({
+        sig: String(l.sig),
+        name: String(l.name || ''),
+        spec: String(l.spec || ''),
+        shape: l.shape === 'bleed' ? 'bleed' : 'valve',
+        variantId: String(l.variantId),
+        qty: Math.max(1, Math.min(500, parseInt(l.qty, 10) || 1)),
+        unitPrice: Number(l.unitPrice) || 0,
+        props: (l.props && typeof l.props === 'object') ? l.props : {}
+      })) : [];
+  } catch(e){ cart = []; }
+  function saveCart(){ try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); }catch(e){} }
+  function cartCount(){ return cart.reduce((n,l)=> n + (Number(l.qty)||0), 0); }
+  function cartSubtotal(){ return cart.reduce((s,l)=> s + (Number(l.qty)||0) * (Number(l.unitPrice)||0), 0); }
+
+  const esc = (s)=> String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+  function renderCart(){
+    const items = document.getElementById('cartItems');
+    const foot  = document.getElementById('cartFoot');
+    const countEl = document.getElementById('cartCount');
+    const n = cartCount();
+    countEl.textContent = n;
+    countEl.classList.toggle('show', n > 0);
+
+    if(cart.length === 0){
+      items.innerHTML = '<div class="cart-empty">Your cart is empty.<br/>Spec a shim and add it here.</div>';
+      foot.style.display = 'none';
+      return;
+    }
+    foot.style.display = 'flex';
+    items.innerHTML = cart.map((l,i)=>
+      '<div class="cart-line">'
+      + '<div class="cl-top"><div><div class="cl-name">'+esc(l.name)+'</div>'
+      + '<div class="cl-spec">'+esc(l.spec)+'</div></div>'
+      + '<div class="cl-price">$'+(l.qty*l.unitPrice).toFixed(2)+'</div></div>'
+      + '<div class="cl-row"><div class="cl-qty">'
+      + '<button type="button" aria-label="Decrease" onclick="lineQty('+i+',-1)">−</button>'
+      + '<input type="number" min="1" max="500" value="'+l.qty+'" inputmode="numeric" onchange="lineSet('+i+',this.value)" />'
+      + '<button type="button" aria-label="Increase" onclick="lineQty('+i+',1)">+</button>'
+      + '</div><button class="cl-remove" onclick="removeLine('+i+')">Remove</button></div>'
+      + '</div>'
+    ).join('');
+
+    const sub = cartSubtotal();
+    document.getElementById('cartSubtotal').textContent = '$' + sub.toFixed(2);
+    const ship = document.getElementById('cartShip');
+    if(sub >= FREE_SHIP){
+      ship.innerHTML = '✓ Free shipping unlocked<div class="bar"><i style="width:100%"></i></div>';
+    } else {
+      const pct = Math.min(100, sub / FREE_SHIP * 100);
+      ship.innerHTML = '$' + (FREE_SHIP - sub).toFixed(2) + ' more for free shipping<div class="bar"><i style="width:'+pct+'%"></i></div>';
+    }
+  }
+
+  function lineQty(i, d){ cart[i].qty = Math.max(1, Math.min(500, cart[i].qty + d)); saveCart(); renderCart(); }
+  function lineSet(i, v){ cart[i].qty = Math.max(1, Math.min(500, parseInt(v,10) || 1)); saveCart(); renderCart(); }
+  function removeLine(i){ cart.splice(i,1); saveCart(); renderCart(); }
+
+  // Lock the page behind the drawer so the right-hand scrollbar scrolls the CART, not the page.
+  // Pad the body by the scrollbar width so content doesn't jump when the bar disappears.
+  function lockPageScroll(lock){
+    if(lock){
+      const sw = window.innerWidth - document.documentElement.clientWidth;
+      if(sw > 0) document.body.style.paddingRight = sw + 'px';
+      document.documentElement.classList.add('cart-open');
+      document.body.classList.add('cart-open');
+    } else {
+      document.documentElement.classList.remove('cart-open');
+      document.body.classList.remove('cart-open');
+      document.body.style.paddingRight = '';
+    }
+  }
+  let cartTrigger = null;
+  function openCart(){
+    cartTrigger = document.activeElement;
+    document.getElementById('cartOverlay').classList.add('open');
+    document.getElementById('cartDrawer').classList.add('open');
+    lockPageScroll(true);
+    const close = document.querySelector('#cartDrawer .cart-close');
+    if(close) close.focus();
+  }
+  function closeCart(){
+    document.getElementById('cartOverlay').classList.remove('open');
+    document.getElementById('cartDrawer').classList.remove('open');
+    lockPageScroll(false);
+    if(cartTrigger && typeof cartTrigger.focus === 'function') cartTrigger.focus();
+    cartTrigger = null;
+  }
+  document.addEventListener('keydown', e=>{ if(e.key === 'Escape') closeCart(); });
+
+  let toastTimer;
+  function toast(msg){ const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(()=> t.classList.remove('show'), 2200); }
 
   addBtn.addEventListener('click', ()=>{
-    const perShim = unitPrice();
-    if(!perShim){ alert('Pick an inner diameter, outer diameter, and thickness first.'); return; }
-    if(shape === 'bleed' && !document.getElementById('notchSel').value){
-      alert('Pick a notch count for the bleed shim.'); return;
+    // Validate in the order the customer fills the form, with shape-aware messages.
+    if(!selText('idSel') || !selText('odSel')){ alert('Pick an inner diameter and outer diameter first.'); return; }
+    if(shape === 'bleed'){
+      if(!document.getElementById('notchSel').value){ alert('Pick a notch count for the bleed shim.'); return; }
+    } else {
+      if(!selText('thSel')){ alert('Pick a thickness first.'); return; }
     }
+    const perShim = unitPrice();
+    if(!perShim){ alert("That combination isn't available — try a different size."); return; }
+    const qty = Math.max(1, parseInt(qtyInput.value, 10) || 1);
+    const part = currentPart();
+    const props = {
+      'Part #':         part,
+      'Shape':          shape === 'bleed' ? 'Bleed shim' : 'Valve shim',
+      'Inner diameter': selText('idSel'),
+      'Outer diameter': selText('odSel'),
+      'Thickness':      shape === 'bleed' ? '.006"' : selText('thSel'),
+      'Source':         'Race Shim',
+    };
+    if(shape === 'bleed') props['Notch count'] = selText('notchSel');
+
+    const name = (part ? part + ' · ' : '') + (shape === 'bleed' ? 'Bleed shim' : 'Valve shim');
+    const bits = [selText('idSel') + ' ID', selText('odSel') + ' OD', (shape === 'bleed' ? '.006"' : selText('thSel'))];
+    if(shape === 'bleed') bits.push(selText('notchSel') + ' notch');
+    const spec = bits.join(' · ');
+    const sig = shape + '|' + spec;
+
+    const existing = cart.find(l => l.sig === sig);
+    if(existing){ existing.qty = Math.min(500, existing.qty + qty); }
+    else { cart.push({ sig, name, spec, shape, variantId: SHIM_VARIANTS[shape], qty, unitPrice: perShim, props }); }
+    saveCart(); renderCart(); openCart(); toast('Added to cart');
+  });
+
+  function checkout(){
+    if(cart.length === 0) return;
     if(!checkoutConfigured()){
       alert("Checkout isn't connected yet — the Shopify store details still need to be filled in.");
       return;
     }
-
-    const qty = Math.max(1, parseInt(qtyInput.value, 10) || 1);
-    // The picked spec rides along as line-item properties so the order shows exactly what to pull.
-    const props = {
-      'Shape':          shape === 'bleed' ? 'Bleed shim' : 'Valve shim',
-      'Inner diameter': selText('idSel'),
-      'Outer diameter': selText('odSel'),
-      'Thickness':      selText('thSel'),
-      'Source':         'Race Shim',   // marks this as a Race Shim order inside the shared store
-    };
-    if(shape === 'bleed') props['Notch count'] = selText('notchSel');
-
-    // Hand off to Shopify's hosted checkout via a normal cart form (no API keys, nothing touches the admin).
+    // Hand off ALL lines to Shopify's hosted checkout in one go (items[] form, no API keys).
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = `https://${SHOP_DOMAIN}/cart/add`;
     form.acceptCharset = 'UTF-8';
     form.style.display = 'none';
-    const hidden = (name, value)=>{ const i = document.createElement('input'); i.type = 'hidden'; i.name = name; i.value = value; form.appendChild(i); };
-    hidden('id', SHIM_VARIANTS[shape]);
-    hidden('quantity', qty);
-    hidden('return_to', '/checkout');                 // skip the cart page, go straight to checkout
-    Object.keys(props).forEach(k=> hidden(`properties[${k}]`, props[k]));
+    const hidden = (name, value)=>{ const i = document.createElement('input'); i.type='hidden'; i.name=name; i.value=value; form.appendChild(i); };
+    cart.forEach((l, idx)=>{
+      hidden(`items[${idx}][id]`, l.variantId);
+      hidden(`items[${idx}][quantity]`, l.qty);
+      Object.keys(l.props).forEach(k => hidden(`items[${idx}][properties][${k}]`, l.props[k]));
+    });
+    hidden('return_to', '/checkout');
     document.body.appendChild(form);
+    // Shopify's /cart/add ACCUMULATES server-side, so clear our local cart at hand-off.
+    // Otherwise hitting Back and checking out again would silently double the order.
+    cart = []; saveCart(); renderCart();
     form.submit();
-  });
+  }
+
+  renderCart(); // restore any persisted cart + badge on load
 </script>
 
 <script type="module">
@@ -842,7 +1375,10 @@
       }
       return env;
     }
-    scene.environment = pmrem.fromScene(buildEnvScene(), 0.04).texture;
+    const envScene = buildEnvScene();
+    scene.environment = pmrem.fromScene(envScene, 0.04).texture;
+    pmrem.dispose();
+    envScene.traverse(o=>{ if(o.geometry) o.geometry.dispose(); if(o.material) o.material.dispose(); });
 
     const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
     camera.position.set(0, 1.1, 2.6);
@@ -1069,7 +1605,8 @@
 
     // --- Hook into configurator events ---
     ['idSel','odSel','thSel','notchSel'].forEach(id => {
-      document.getElementById(id).addEventListener('change', update);
+      const el = document.getElementById(id);
+      if(el) el.addEventListener('change', update);
     });
     document.querySelectorAll('[data-shape]').forEach(btn => {
       btn.addEventListener('click', () => setTimeout(update, 0));
@@ -1080,22 +1617,19 @@
     if(loadingEl) loadingEl.remove();
 
     // --- Animate ---
-    let rafId;
+    let rafId = null;
     function tick(){
       controls.update();
       renderer.render(scene, camera);
       rafId = requestAnimationFrame(tick);
     }
-    tick();
+    function startLoop(){ if(rafId == null) rafId = requestAnimationFrame(tick); }
+    function stopLoop(){ if(rafId != null){ cancelAnimationFrame(rafId); rafId = null; } }
+    startLoop();
 
-    // Pause rendering when off-screen to save battery
+    // Pause rendering when off-screen to save battery (idempotent start/stop)
     const pauseIO = new IntersectionObserver((entries)=>{
-      if(entries[0].isIntersecting){
-        if(!rafId) tick();
-      } else {
-        cancelAnimationFrame(rafId);
-        rafId = null;
-      }
+      if(entries[0].isIntersecting) startLoop(); else stopLoop();
     });
     pauseIO.observe(viewerEl);
   }

@@ -1,3 +1,7 @@
 *.zip
 .DS_Store
 Thumbs.db
+
+# build artifacts (not for the live site)
+make_product_images.py
+shopify-product-images/
