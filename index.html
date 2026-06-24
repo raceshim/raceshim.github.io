@@ -1368,9 +1368,8 @@
     });
     hidden('return_to', '/checkout');
     document.body.appendChild(form);
-    // Shopify's /cart/add ACCUMULATES server-side, so clear our local cart at hand-off.
-    // Otherwise hitting Back and checking out again would silently double the order.
-    cart = []; saveCart(); renderCart();
+    // Keep the local cart after hand-off: if the shopper clicks the store logo/Home and
+    // lands back on raceshim.com, their cart is still here (not wiped).
     form.submit();
   }
 
