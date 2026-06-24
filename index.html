@@ -1126,7 +1126,7 @@
     const isBleed = rec.category==='bleed' || price===3.75;
     const variantId = isBleed ? SHIM_VARIANTS.bleed : SHIM_VARIANTS.valve;
     const typeLabel = rec.category==='bleed' ? 'Bleed shim' : (rec.category==='specialty' ? catTypeLabel(rec) : 'Valve shim');
-    const props={ 'Part #':rec.part, 'Type':typeLabel, 'Source':'Race Shim' };
+    const props={ 'Part #':rec.part, 'Type':typeLabel, '_Source':'Race Shim' };
     if(rec.id_disp) props['Inner diameter']=rec.id_disp;
     if(rec.od_disp) props['Outer diameter']=rec.od_disp;
     props['Thickness'] = rec.category==='bleed' ? '.006"' : (rec.thk_disp||'');
@@ -1264,7 +1264,7 @@
       return;
     }
     foot.style.display = 'flex';
-    const propOrder = ['Part #','Type','Shape','Source','Inner diameter','Outer diameter','Thickness','Notch count','Application'];
+    const propOrder = ['Part #','Type','Shape','Inner diameter','Outer diameter','Thickness','Notch count','Application'];
     items.innerHTML = cart.map((l,i)=>{
       const title = (l.props && (l.props['Type'] || l.props['Shape'])) || l.name;
       const props = l.props
@@ -1354,7 +1354,7 @@
       'Inner diameter': selText('idSel'),
       'Outer diameter': selText('odSel'),
       'Thickness':      shape === 'bleed' ? '.006"' : selText('thSel'),
-      'Source':         'Race Shim',
+      '_Source':        'Race Shim',
     };
     if(shape === 'bleed') props['Notch count'] = selText('notchSel');
 
