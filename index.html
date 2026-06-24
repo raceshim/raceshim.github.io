@@ -305,7 +305,9 @@
   .cl-qty button:hover{background:var(--fog)}
   /* higher specificity than the global input[type=number]; fixed width fits 3 digits so the trash never shifts */
   .cart-line .cl-qty input{border:0;border-left:1.5px solid var(--line);border-right:1.5px solid var(--line);width:64px;min-width:64px;
-    text-align:center;font-size:15px;font-weight:600;padding:10px 4px}
+    text-align:center;font-size:15px;font-weight:600;padding:10px 4px;-moz-appearance:textfield;appearance:textfield}
+  .cl-qty input::-webkit-outer-spin-button,.cl-qty input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  .cl-qty button{touch-action:none;user-select:none}
   .cl-qty input:focus{outline:0}
   .cl-remove{background:transparent;border:0;color:var(--steel);cursor:pointer;padding:8px;display:inline-flex;border-radius:8px}
   .cl-remove:hover{color:var(--ink);background:var(--fog)}
@@ -1262,9 +1264,9 @@
       return '<div class="cart-line">'
         + '<div class="cl-details"><div class="cl-name">'+esc(title)+'</div><div class="cl-props">'+props+'</div></div>'
         + '<div class="cl-mid"><div class="cl-qty">'
-        +   '<button type="button" aria-label="Decrease" onclick="lineQty('+i+',-1)">−</button>'
+        +   '<button type="button" class="cl-dec" data-i="'+i+'" aria-label="Decrease">−</button>'
         +   '<input type="number" min="1" max="500" value="'+l.qty+'" inputmode="numeric" onchange="lineSet('+i+',this.value)" />'
-        +   '<button type="button" aria-label="Increase" onclick="lineQty('+i+',1)">+</button>'
+        +   '<button type="button" class="cl-inc" data-i="'+i+'" aria-label="Increase">+</button>'
         + '</div>'
         + '<button class="cl-remove" type="button" aria-label="Remove" title="Remove" onclick="removeLine('+i+')">'
         +   '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>'
@@ -1287,6 +1289,58 @@
   function lineQty(i, d){ cart[i].qty = Math.max(1, Math.min(500, cart[i].qty + d)); saveCart(); renderCart(); }
   function lineSet(i, v){ cart[i].qty = Math.max(1, Math.min(500, parseInt(v,10) || 1)); saveCart(); renderCart(); }
   function removeLine(i){ cart.splice(i,1); saveCart(); renderCart(); }
+
+  // Press-and-hold on the cart +/- buttons (replaces the number-input arrows).
+  // Updates the line + totals IN PLACE so the held button isn't re-rendered out from under the press.
+  function syncCartTotals(){
+    const sub = cartSubtotal();
+    const subEl = document.getElementById('cartSubtotal'); if(subEl) subEl.textContent = '$' + sub.toFixed(2);
+    const n = cartCount();
+    const cc = document.getElementById('cartCount'); if(cc){ cc.textContent = n; cc.classList.toggle('show', n>0); }
+    const hc = document.getElementById('cartHeadCount'); if(hc) hc.textContent = n;
+    const ship = document.getElementById('cartShip');
+    if(ship){
+      if(sub >= FREE_SHIP){ ship.innerHTML = '✓ Free shipping unlocked<div class="bar"><i style="width:100%"></i></div>'; }
+      else { const pct = Math.min(100, sub / FREE_SHIP * 100); ship.innerHTML = '$' + (FREE_SHIP - sub).toFixed(2) + ' more for free shipping<div class="bar"><i style="width:'+pct+'%"></i></div>'; }
+    }
+  }
+  function stepLine(i, d){
+    if(!cart[i]){ stopHold(); return; }
+    cart[i].qty = Math.max(1, Math.min(500, cart[i].qty + d));
+    const line = document.querySelectorAll('#cartItems .cart-line')[i];
+    if(line){
+      const inp = line.querySelector('.cl-qty input'); if(inp) inp.value = cart[i].qty;
+      const pr  = line.querySelector('.cl-price');     if(pr)  pr.textContent = '$' + (cart[i].qty * cart[i].unitPrice).toFixed(2);
+    }
+    syncCartTotals();
+  }
+  let holdTimer = null, holdInterval = null, holding = false;
+  function startHold(i, d){
+    stopHold();
+    holding = true;
+    stepLine(i, d);                                              // first step = a normal tap
+    holdTimer = setTimeout(()=>{ holdInterval = setInterval(()=>stepLine(i, d), 110); }, 380);
+  }
+  function stopHold(){
+    if(!holding) return;
+    if(holdTimer){ clearTimeout(holdTimer); holdTimer = null; }
+    if(holdInterval){ clearInterval(holdInterval); holdInterval = null; }
+    holding = false;
+    saveCart();
+  }
+  function wireCartHold(){
+    const items = document.getElementById('cartItems');
+    if(!items) return;
+    items.addEventListener('pointerdown', e=>{
+      const dec = e.target.closest('.cl-dec'), inc = e.target.closest('.cl-inc');
+      if(!dec && !inc) return;
+      e.preventDefault();
+      const btn = dec || inc;
+      startHold(parseInt(btn.dataset.i, 10), dec ? -1 : 1);
+    });
+    ['pointerup','pointercancel','pointerleave'].forEach(ev => items.addEventListener(ev, stopHold));
+    document.addEventListener('pointerup', stopHold);
+  }
 
   // Lock the page behind the drawer so the right-hand scrollbar scrolls the CART, not the page.
   // Pad the body by the scrollbar width so content doesn't jump when the bar disappears.
@@ -1385,6 +1439,7 @@
   }
 
   renderCart(); // restore any persisted cart + badge on load
+  wireCartHold();
 </script>
 
 <script type="module">
