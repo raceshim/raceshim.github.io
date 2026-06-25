@@ -395,10 +395,14 @@
   .cat-intro{max-width:700px;margin:-6px 0 18px;color:var(--steel);font-size:15px;line-height:1.55}
   .cat-cb{width:46px;text-align:center}
   .cat-table input[type="checkbox"]{width:18px;height:18px;cursor:pointer;accent-color:var(--ink);vertical-align:middle}
-  .cat-qcol,.cat-qty{width:108px}
-  /* higher specificity than the global input[type=number]{width:100%}; min-width forces the column wider so 3 digits fit */
-  .cat-table .cat-row-qty{width:88px;min-width:88px;padding:7px 10px;font-size:14px;border:1.5px solid var(--line);border-radius:8px;text-align:center;font-family:inherit;background:var(--paper)}
-  .cat-table .cat-row-qty:focus{outline:0;border-color:var(--ink)}
+  .cat-qcol,.cat-qty{width:160px}
+  /* +/- press-and-hold pill (mirrors the cart). Fixed child widths so nothing shifts, even at 4 digits. */
+  .cat-qbox{display:inline-flex;align-items:stretch;border:1.5px solid var(--line);border-radius:9px;overflow:hidden;vertical-align:middle}
+  .cat-qbox button{background:var(--paper);border:0;width:34px;flex:0 0 auto;font-size:17px;font-weight:700;line-height:1;color:var(--ink);cursor:pointer;padding:0;touch-action:none;user-select:none}
+  .cat-qbox button:hover{background:var(--fog)}
+  .cat-table .cat-qbox .cat-row-qty{width:60px;min-width:60px;flex:0 0 auto;padding:7px 2px;font-size:14px;text-align:center;font-family:inherit;background:var(--paper);border:0;border-left:1.5px solid var(--line);border-right:1.5px solid var(--line);border-radius:0;-moz-appearance:textfield;appearance:textfield}
+  .cat-qbox .cat-row-qty::-webkit-outer-spin-button,.cat-qbox .cat-row-qty::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  .cat-table .cat-row-qty:focus{outline:0}
   .cat-table tbody tr.sel{background:var(--fog)}
   .cat-table tbody tr.sel td:first-child{box-shadow:inset 3px 0 0 var(--ink)}
   .cat-table tbody tr.flash{animation:catflash 1.5s ease}
@@ -555,7 +559,7 @@
           <label id="qtyLabel">6. Quantity</label>
           <div class="qty">
             <button type="button" aria-label="Decrease" onclick="changeQty(-1)">−</button>
-            <input id="qtyInput" type="number" min="1" max="500" value="1" inputmode="numeric" />
+            <input id="qtyInput" type="number" min="1" max="9999" value="1" inputmode="numeric" />
             <button type="button" aria-label="Increase" onclick="changeQty(1)">+</button>
           </div>
           <div class="bulk-hint" id="bulkHint">Orders $100+ ship free.</div>
@@ -819,7 +823,7 @@
   }
 
   const qtyInput = document.getElementById('qtyInput');
-  function changeQty(delta){ let v=parseInt(qtyInput.value,10)||1; v=Math.max(1,Math.min(500,v+delta)); qtyInput.value=v; computePrice(); }
+  function changeQty(delta){ let v=parseInt(qtyInput.value,10)||1; v=Math.max(1,Math.min(9999,v+delta)); qtyInput.value=v; computePrice(); }
 
   function computePrice(){
     const qty = Math.max(1, parseInt(qtyInput.value,10) || 1);
@@ -1037,7 +1041,11 @@
           + '<td class="num">'+esc(thk)+'</td>'
           + '<td class="num">'+notch+'</td>'
           + '<td class="num">'+price+'</td>'
-          + '<td class="cat-qty"><input type="number" class="cat-row-qty" min="1" max="500" value="'+qty+'" aria-label="Quantity for '+esc(r.part)+'" /></td>'
+          + '<td class="cat-qty"><div class="cat-qbox">'
+          +   '<button type="button" class="cat-dec" aria-label="Decrease quantity">−</button>'
+          +   '<input type="number" class="cat-row-qty" min="1" max="9999" value="'+qty+'" inputmode="numeric" aria-label="Quantity for '+esc(r.part)+'" />'
+          +   '<button type="button" class="cat-inc" aria-label="Increase quantity">+</button>'
+          + '</div></td>'
           + '</tr>';
       }).join('');
     }
@@ -1074,7 +1082,7 @@
   function addPartToCart(part, qty){
     const rec=(window.__CATALOG||[]).find(r=>String(r.part)===String(part));
     if(!rec) return false;
-    qty=Math.max(1, Math.min(500, parseInt(qty,10)||1));
+    qty=Math.max(1, Math.min(9999, parseInt(qty,10)||1));
     const price=Number(rec.price)||0;
     const isBleed = rec.category==='bleed' || price===3.75;
     const variantId = isBleed ? SHIM_VARIANTS.bleed : SHIM_VARIANTS.valve;
@@ -1091,7 +1099,7 @@
     const spec=dims.join(' · ');
     const sig='p|'+rec.part;
     const existing=cart.find(l=>l.sig===sig);
-    if(existing){ existing.qty=Math.min(500, existing.qty+qty); }
+    if(existing){ existing.qty=Math.min(9999, existing.qty+qty); }
     else { cart.push({ sig, name, spec, shape:(isBleed?'bleed':'valve'), variantId, qty, unitPrice:price, props }); }
     return true;
   }
@@ -1106,11 +1114,11 @@
       body.addEventListener('change', e=>{
         const tr=e.target.closest('tr[data-part]'); if(!tr) return; const part=tr.dataset.part;
         if(e.target.classList.contains('cat-row-cb')){
-          if(e.target.checked){ const qv=Math.max(1,Math.min(500,parseInt(tr.querySelector('.cat-row-qty').value,10)||1)); catSel.set(part,qv); tr.classList.add('sel'); }
+          if(e.target.checked){ const qv=Math.max(1,Math.min(9999,parseInt(tr.querySelector('.cat-row-qty').value,10)||1)); catSel.set(part,qv); tr.classList.add('sel'); }
           else { catSel.delete(part); tr.classList.remove('sel'); }
           syncSelectAll(); updateCatBar();
         } else if(e.target.classList.contains('cat-row-qty')){
-          let v=Math.max(1,Math.min(500,parseInt(e.target.value,10)||1)); e.target.value=v;
+          let v=Math.max(1,Math.min(9999,parseInt(e.target.value,10)||1)); e.target.value=v;
           if(catSel.has(part)) catSel.set(part,v);
           updateCatBar();
         }
@@ -1121,13 +1129,23 @@
         const cb=tr.querySelector('.cat-row-cb'); cb.checked=!cb.checked;
         cb.dispatchEvent(new Event('change',{bubbles:true}));
       });
+      // Press-and-hold +/- on the catalog qty (mirrors the cart). Clicks in .cat-qty don't toggle the row.
+      body.addEventListener('pointerdown', e=>{
+        const dec=e.target.closest('.cat-dec'), inc=e.target.closest('.cat-inc');
+        if(!dec && !inc) return;
+        e.preventDefault();
+        const input=(dec||inc).closest('.cat-qbox').querySelector('.cat-row-qty');
+        catStartHold(input, dec ? -1 : 1);
+      });
+      ['pointerup','pointercancel','pointerleave'].forEach(ev=>body.addEventListener(ev, catStopHold));
+      document.addEventListener('pointerup', catStopHold);
     }
     const all=document.getElementById('catSelectAll');
     if(all) all.addEventListener('change', ()=>{
       [...document.querySelectorAll('#catBody tr[data-part]')].forEach(tr=>{
         const part=tr.dataset.part, cb=tr.querySelector('.cat-row-cb');
         cb.checked=all.checked;
-        if(all.checked){ const qv=Math.max(1,Math.min(500,parseInt(tr.querySelector('.cat-row-qty').value,10)||1)); catSel.set(part,qv); tr.classList.add('sel'); }
+        if(all.checked){ const qv=Math.max(1,Math.min(9999,parseInt(tr.querySelector('.cat-row-qty').value,10)||1)); catSel.set(part,qv); tr.classList.add('sel'); }
         else { catSel.delete(part); tr.classList.remove('sel'); }
       });
       updateCatBar();
@@ -1189,7 +1207,7 @@
         spec: String(l.spec || ''),
         shape: l.shape === 'bleed' ? 'bleed' : 'valve',
         variantId: String(l.variantId),
-        qty: Math.max(1, Math.min(500, parseInt(l.qty, 10) || 1)),
+        qty: Math.max(1, Math.min(9999, parseInt(l.qty, 10) || 1)),
         unitPrice: Number(l.unitPrice) || 0,
         props: (l.props && typeof l.props === 'object') ? l.props : {}
       })) : [];
@@ -1227,7 +1245,7 @@
         + '<div class="cl-details"><div class="cl-name">'+esc(title)+'</div><div class="cl-props">'+props+'</div></div>'
         + '<div class="cl-mid"><div class="cl-qty">'
         +   '<button type="button" class="cl-dec" data-i="'+i+'" aria-label="Decrease">−</button>'
-        +   '<input type="number" min="1" max="500" value="'+l.qty+'" inputmode="numeric" onchange="lineSet('+i+',this.value)" />'
+        +   '<input type="number" min="1" max="9999" value="'+l.qty+'" inputmode="numeric" onchange="lineSet('+i+',this.value)" />'
         +   '<button type="button" class="cl-inc" data-i="'+i+'" aria-label="Increase">+</button>'
         + '</div>'
         + '<button class="cl-remove" type="button" aria-label="Remove" title="Remove" onclick="removeLine('+i+')">'
@@ -1248,8 +1266,8 @@
     }
   }
 
-  function lineQty(i, d){ cart[i].qty = Math.max(1, Math.min(500, cart[i].qty + d)); saveCart(); renderCart(); }
-  function lineSet(i, v){ cart[i].qty = Math.max(1, Math.min(500, parseInt(v,10) || 1)); saveCart(); renderCart(); }
+  function lineQty(i, d){ cart[i].qty = Math.max(1, Math.min(9999, cart[i].qty + d)); saveCart(); renderCart(); }
+  function lineSet(i, v){ cart[i].qty = Math.max(1, Math.min(9999, parseInt(v,10) || 1)); saveCart(); renderCart(); }
   function removeLine(i){ cart.splice(i,1); saveCart(); renderCart(); }
 
   // Press-and-hold on the cart +/- buttons (replaces the number-input arrows).
@@ -1268,7 +1286,7 @@
   }
   function stepLine(i, d){
     if(!cart[i]){ stopHold(); return; }
-    cart[i].qty = Math.max(1, Math.min(500, cart[i].qty + d));
+    cart[i].qty = Math.max(1, Math.min(9999, cart[i].qty + d));
     const line = document.querySelectorAll('#cartItems .cart-line')[i];
     if(line){
       const inp = line.querySelector('.cl-qty input'); if(inp) inp.value = cart[i].qty;
@@ -1302,6 +1320,28 @@
     });
     ['pointerup','pointercancel','pointerleave'].forEach(ev => items.addEventListener(ev, stopHold));
     document.addEventListener('pointerup', stopHold);
+  }
+
+  // Catalog qty press-and-hold +/- (mirrors the cart). Steps the row's input IN PLACE so the held
+  // button isn't re-rendered out from under the press; updates catSel + the bar if the row is selected.
+  let catHoldTimer=null, catHoldInterval=null, catHolding=false;
+  function catStepRow(input, d){
+    if(!input){ catStopHold(); return; }
+    const v = Math.max(1, Math.min(9999, (parseInt(input.value,10)||1) + d));
+    input.value = v;
+    const tr = input.closest('tr[data-part]');
+    if(tr && catSel.has(tr.dataset.part)){ catSel.set(tr.dataset.part, v); updateCatBar(); }
+  }
+  function catStartHold(input, d){
+    catStopHold(); catHolding=true;
+    catStepRow(input, d);                                       // first step = a normal tap
+    catHoldTimer = setTimeout(()=>{ catHoldInterval = setInterval(()=>catStepRow(input, d), 110); }, 380);
+  }
+  function catStopHold(){
+    if(!catHolding) return;
+    if(catHoldTimer){ clearTimeout(catHoldTimer); catHoldTimer=null; }
+    if(catHoldInterval){ clearInterval(catHoldInterval); catHoldInterval=null; }
+    catHolding=false;
   }
 
   // Lock the page behind the drawer so the right-hand scrollbar scrolls the CART, not the page.
@@ -1370,7 +1410,7 @@
     const sig = part ? 'p|' + part : shape + '|' + spec;
 
     const existing = cart.find(l => l.sig === sig);
-    if(existing){ existing.qty = Math.min(500, existing.qty + qty); }
+    if(existing){ existing.qty = Math.min(9999, existing.qty + qty); }
     else { cart.push({ sig, name, spec, shape, variantId: SHIM_VARIANTS[shape], qty, unitPrice: perShim, props }); }
     saveCart(); renderCart(); toast('Added to cart');
   });
