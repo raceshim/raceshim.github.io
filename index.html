@@ -1031,7 +1031,7 @@
         const notch = (r.category==='bleed' && r.notch!=null) ? esc(String(r.notch)) : '—';
         const price = r.price!=null ? '$'+Number(r.price).toFixed(2) : '—';
         const sel = catSel.has(r.part);
-        const qty = sel ? catSel.get(r.part) : 1;
+        const qty = sel ? catSel.get(r.part) : 0;
         return '<tr data-part="'+esc(r.part)+'" id="'+catRowId(r.part)+'"'+(sel?' class="sel"':'')+'>'
           + '<td class="cat-cb"><input type="checkbox" class="cat-row-cb" aria-label="Select '+esc(r.part)+'"'+(sel?' checked':'')+' /></td>'
           + '<td class="cp">'+esc(r.part)+'</td>'
@@ -1043,7 +1043,7 @@
           + '<td class="num">'+price+'</td>'
           + '<td class="cat-qty"><div class="cat-qbox">'
           +   '<button type="button" class="cat-dec" aria-label="Decrease quantity">−</button>'
-          +   '<input type="number" class="cat-row-qty" min="1" max="9999" value="'+qty+'" inputmode="numeric" aria-label="Quantity for '+esc(r.part)+'" />'
+          +   '<input type="number" class="cat-row-qty" min="0" max="9999" value="'+qty+'" inputmode="numeric" aria-label="Quantity for '+esc(r.part)+'" />'
           +   '<button type="button" class="cat-inc" aria-label="Increase quantity">+</button>'
           + '</div></td>'
           + '</tr>';
@@ -1068,6 +1068,18 @@
     const boxes=[...document.querySelectorAll('#catBody .cat-row-cb')];
     all.checked = boxes.length>0 && boxes.every(b=>b.checked);
     all.indeterminate = boxes.some(b=>b.checked) && !all.checked;
+  }
+  // Quantity drives selection: 0 = unselected, 1+ = selected. Keeps qty box, checkbox,
+  // .sel row state, catSel, and the bar all in sync from one place.
+  function catSyncRow(tr, qty){
+    if(!tr) return;
+    qty = Math.max(0, Math.min(9999, parseInt(qty,10)||0));
+    const part = tr.dataset.part;
+    const inp = tr.querySelector('.cat-row-qty'); if(inp) inp.value = qty;
+    const cb  = tr.querySelector('.cat-row-cb');  if(cb)  cb.checked = qty>=1;
+    if(qty>=1){ catSel.set(part, qty); tr.classList.add('sel'); }
+    else      { catSel.delete(part);   tr.classList.remove('sel'); }
+    updateCatBar(); syncSelectAll();
   }
   // Make a part visible + flash it (used by the search box for specialty parts)
   function revealCatalogRow(part){
@@ -1112,15 +1124,12 @@
     }));
     if(body){
       body.addEventListener('change', e=>{
-        const tr=e.target.closest('tr[data-part]'); if(!tr) return; const part=tr.dataset.part;
+        const tr=e.target.closest('tr[data-part]'); if(!tr) return;
         if(e.target.classList.contains('cat-row-cb')){
-          if(e.target.checked){ const qv=Math.max(1,Math.min(9999,parseInt(tr.querySelector('.cat-row-qty').value,10)||1)); catSel.set(part,qv); tr.classList.add('sel'); }
-          else { catSel.delete(part); tr.classList.remove('sel'); }
-          syncSelectAll(); updateCatBar();
+          const cur=parseInt(tr.querySelector('.cat-row-qty').value,10)||0;
+          catSyncRow(tr, e.target.checked ? Math.max(1,cur) : 0);
         } else if(e.target.classList.contains('cat-row-qty')){
-          let v=Math.max(1,Math.min(9999,parseInt(e.target.value,10)||1)); e.target.value=v;
-          if(catSel.has(part)) catSel.set(part,v);
-          updateCatBar();
+          catSyncRow(tr, parseInt(e.target.value,10)||0);
         }
       });
       body.addEventListener('click', e=>{
@@ -1142,13 +1151,11 @@
     }
     const all=document.getElementById('catSelectAll');
     if(all) all.addEventListener('change', ()=>{
+      const on=all.checked;
       [...document.querySelectorAll('#catBody tr[data-part]')].forEach(tr=>{
-        const part=tr.dataset.part, cb=tr.querySelector('.cat-row-cb');
-        cb.checked=all.checked;
-        if(all.checked){ const qv=Math.max(1,Math.min(9999,parseInt(tr.querySelector('.cat-row-qty').value,10)||1)); catSel.set(part,qv); tr.classList.add('sel'); }
-        else { catSel.delete(part); tr.classList.remove('sel'); }
+        const cur=parseInt(tr.querySelector('.cat-row-qty').value,10)||0;
+        catSyncRow(tr, on ? Math.max(1,cur) : 0);
       });
-      updateCatBar();
     });
     const clr=document.getElementById('catClear');
     if(clr) clr.addEventListener('click', ()=>{ catSel.clear(); renderCatalog(); });
