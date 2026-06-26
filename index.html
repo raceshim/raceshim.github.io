@@ -1334,10 +1334,8 @@
   let catHoldTimer=null, catHoldInterval=null, catHolding=false;
   function catStepRow(input, d){
     if(!input){ catStopHold(); return; }
-    const v = Math.max(1, Math.min(9999, (parseInt(input.value,10)||1) + d));
-    input.value = v;
     const tr = input.closest('tr[data-part]');
-    if(tr && catSel.has(tr.dataset.part)){ catSel.set(tr.dataset.part, v); updateCatBar(); }
+    catSyncRow(tr, (parseInt(input.value,10)||0) + d);   // qty drives selection: 0 = unselected, 1+ = selected
   }
   function catStartHold(input, d){
     catStopHold(); catHolding=true;
