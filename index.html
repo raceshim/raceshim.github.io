@@ -279,6 +279,10 @@
     background:var(--ink);color:var(--paper);font-size:11px;font-weight:700;align-items:center;justify-content:center;
     border:2px solid var(--paper);display:none}
   .cart-count.show{display:inline-flex}
+  .acct-btn{background:transparent;border:1.5px solid var(--ink);color:var(--ink);
+    width:46px;height:46px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;
+    cursor:pointer;margin-left:14px;transition:background .15s,color .15s;text-decoration:none}
+  .acct-btn:hover{background:var(--ink);color:var(--paper)}
   /* full-page cart (spread out, like a real cart page) */
   .cart-overlay{position:fixed;inset:0;background:var(--paper);opacity:0;visibility:hidden;transition:opacity .2s;z-index:100}
   .cart-overlay.open{opacity:1;visibility:visible}
@@ -450,12 +454,14 @@
       <a href="#catalog">Catalog</a>
       <a href="#custom">Custom</a>
       <a href="#faq">FAQ</a>
-      <a href="https://shopify.com/75337531548/account">Sign in</a>
     </div>
     <div class="nav-actions">
       <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false" aria-controls="navLinks">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
       </button>
+      <a class="acct-btn" href="https://shopify.com/75337531548/account" aria-label="Sign in" title="Sign in">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </a>
       <button class="cart-btn" id="cartBtn" aria-label="Open cart" onclick="openCart()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2l1 4h13l-2 10H8L5 4H2"/><circle cx="9" cy="20" r="1.5" fill="currentColor"/><circle cx="18" cy="20" r="1.5" fill="currentColor"/></svg>
         <span class="cart-count" id="cartCount">0</span>
