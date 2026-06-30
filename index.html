@@ -1450,8 +1450,13 @@
     });
     hidden('return_to', '/checkout');
     document.body.appendChild(form);
-    // Keep the local cart after hand-off: if the shopper clicks the store logo/Home and
-    // lands back on raceshim.com, their cart is still here (not wiped).
+    // Clear the local cart once it's handed to Shopify checkout. The lines are already captured in
+    // this form's hidden inputs (and in Shopify's own cart), so nothing is lost — but it means that
+    // after the shopper pays and clicks "Continue shopping" back to raceshim.com they don't return
+    // to a stale, already-purchased cart sitting full.
+    cart = [];
+    saveCart();
+    renderCart();
     form.submit();
   }
 
